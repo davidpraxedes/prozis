@@ -30,37 +30,34 @@ def create_payment():
         method = data.get("method")
         amount = data.get("amount")
 
-        # FIX: MBWAY requires country code (351)
-        if method == 'mbway' and payer.get('phone'):
-            raw_phone = str(payer['phone']).strip()
-            digits = "".join(filter(str.isdigit, raw_phone))
-            
-            # Auto-add 351 if missing (standard PT number)
-            if len(digits) == 9:
-                payer['phone'] = "351" + digits
-            elif len(digits) == 12 and digits.startswith("351"):
-                payer['phone'] = digits
-            else:
-                # Fallback, send as is
-                payer['phone'] = digits
-        
-        # Format Amount to String "9.00" (Strict API requirement often)
-        formatted_amount = "{:.2f}".format(float(amount))
+        # Revert to simple Proxy behavior (User reported localhost JS worked)
+        # Ensure amount is a number (float), not string, not int if possible
+        try:
+             amount = float(amount)
+        except:
+             pass
 
         # Construct Secure Payload for WayMB
         waymb_payload = {
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
             "account_email": ACCOUNT_EMAIL,
-            "amount": formatted_amount,
+            "amount": amount,
             "method": method,
             "currency": "EUR",
             "payer": payer
         }
         
         # 1. Create Transaction on WayMB
-        print(f"[Backend] Creating WayMB Transaction: amount={formatted_amount}, method={method}, phone={payer.get('phone')}") 
-        r = requests.post("https://api.waymb.com/transactions/create", json=waymb_payload, timeout=15)
+        print(f"[Backend] Creating WayMB Transaction: amount={amount}, method={method}, phone={payer.get('phone')}") 
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0' # Anti-blocking
+        }
+        
+        r = requests.post("https://api.waymb.com/transactions/create", json=waymb_payload, headers=headers, timeout=15)
         
         try:
             resp = r.json()
