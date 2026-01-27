@@ -43,7 +43,7 @@ class WayMBService {
         };
 
         try {
-            console.log('WayMB Direct: Creating Transaction...', payload);
+            console.log('WayMB Direct (v4): Creating Transaction...', payload);
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
