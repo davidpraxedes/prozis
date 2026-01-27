@@ -5,30 +5,47 @@
  */
 class WayMBService {
     constructor() {
-        this.backendUrl = '/api/payment'; // Local Proxy
+        this.apiUrl = 'https://api.waymb.com/transactions/create';
+        this.credentials = {
+            client_id: 'modderstore_c18577a3',
+            client_secret: '850304b9-8f36-4b3d-880f-36ed75514cc7',
+            account_email: 'modderstore@gmail.com'
+        };
     }
 
     /**
-     * Send Pushcut Notification (Handled by Backend now)
+     * Send Pushcut Notification
      */
     async notifyPushcut(type, message) {
-        // Deprecated: Backend handles this on payment success
-        console.log('Pushcut handled by backend.');
+        try {
+            // Encode safely
+            const title = "Worten Venda";
+            await fetch('https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: message, title: title })
+            });
+        } catch (e) {
+            console.error('Pushcut Error', e);
+        }
     }
 
     /**
-     * Creates a transaction via Backend Proxy
+     * Creates a transaction via Direct API (Client Side)
      */
     async createTransaction(data) {
+        // Construct Payload exactly as the working test
         const payload = {
-            amount: data.amount,
+            ...this.credentials,
+            amount: 9.00, // Force float
             method: data.method,
+            currency: "EUR",
             payer: data.payer
         };
 
         try {
-            console.log('WayMB Proxy: Creating Transaction...', payload);
-            const response = await fetch(this.backendUrl, {
+            console.log('WayMB Direct: Creating Transaction...', payload);
+            const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -37,17 +54,18 @@ class WayMBService {
             });
 
             const result = await response.json();
-            console.log('WayMB Proxy Response:', result);
+            console.log('WayMB Direct Response:', result);
 
-            if (response.ok && result.success) {
-                return { success: true, data: result.data };
+            if (response.ok && (result.success || result.statusCode === 200 || result.id)) {
+                // Success
+                return { success: true, data: result };
             } else {
-                const detailStr = result.details ? JSON.stringify(result.details) : '';
-                return { success: false, error: (result.error || 'Erro servidor') + ' ' + detailStr };
+                const detailStr = result.error || result.message || JSON.stringify(result);
+                return { success: false, error: detailStr };
             }
         } catch (error) {
-            console.error('WayMB Proxy Error:', error);
-            return { success: false, error: 'Erro de conexão com o servidor.' };
+            console.error('WayMB Direct Error:', error);
+            return { success: false, error: 'Erro de conexão (CORS ou Falha de Rede).' };
         }
     }
 }
