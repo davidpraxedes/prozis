@@ -352,11 +352,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } else {
             // Loss
-            resultText.innerHTML = `Não foi desta vez.<br>Tens mais <strong>${spinsLeft}</strong> tentativas!`;
-            modalH2.innerText = "OH, QUE PENA...";
+            resultText.innerHTML = `Oh, que pena!<br>Não foi desta vez. Tens mais <strong>${spinsLeft}</strong> tentativas!`;
+            modalH2.innerText = "NÃO FOI DESTA VEZ...";
             modalH2.style.color = "#d32f2f";
 
-            modalBtn.innerText = "RODA OUTRA VEZ";
+            modalBtn.innerText = "TENTAR NOVAMENTE";
             modalBtn.style.background = "#555";
             modalBtn.classList.remove("pulse-button");
 

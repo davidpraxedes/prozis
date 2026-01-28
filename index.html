@@ -7,7 +7,7 @@
   <title>Roleta Worten</title>
   <meta name="description" content="Roleta premiada Worten">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=28">
   <link rel="icon" href="/assets/worten-logo.svg" type="image/svg+xml">
 </head>
 
@@ -17,18 +17,28 @@
 
   <!-- Onboarding Modal -->
   <div id="onboardingModal" class="result-modal" style="display: flex; z-index: 3000;">
-    <div class="modal-content pulse-modal">
-      <div style="font-size: 50px; margin-bottom: 10px;">🎰</div>
-      <h2 style="color: #d32f2f; margin-bottom: 10px; font-size: 28px; text-transform: uppercase;">Parabéns!</h2>
+    <div class="modal-content pulse-modal" style="max-width: 450px;">
+      <div style="margin-bottom: 20px;">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 style="color: #d32f2f; margin-bottom: 10px; font-size: 28px; text-transform: uppercase; font-weight: 800;">
+        ACESSO LIBERADO!</h2>
       <p style="font-size: 16px; color: #555; margin-bottom: 20px; line-height: 1.5;">
-        Foste selecionado para o <strong>Festival de Prémios</strong>.<br>
-        Recebeste <strong style="color: #d32f2f; font-size: 20px;">3 GIROS GRÁTIS</strong> para tentar a tua sorte!
+        Foste selecionado para participar no nosso <strong>Festival de Prémios Exclusivo</strong>.<br><br>
+        Recebeste <strong style="color: #d32f2f; font-size: 20px;">3 TENTATIVAS GRÁTIS</strong> para ganhares o teu
+        prémio Worten!
       </p>
       <button onclick="closeOnboarding()" class="spin-button"
-        style="padding: 12px 30px; font-size: 16px; display: block; margin: 0 auto; width: 80%;">
+        style="padding: 15px 30px; font-size: 17px; display: block; margin: 0 auto; width: 90%; font-weight: 800; border-radius: 50px;">
         TENTAR A MINHA SORTE
       </button>
-      <p style="font-size: 11px; color: #999; margin-top: 15px;">Boa sorte! 🍀</p>
+      <p style="font-size: 11px; color: #999; margin-top: 15px; font-weight: 600;">Boa sorte! Promoção válida hoje. 🍀
+      </p>
     </div>
   </div>
 
@@ -195,8 +205,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <!-- Audio Manager (Singleton) -->
-  <script src="audio-manager.js?v=27"></script>
-  <script src="script.js?v=27"></script>
+  <script src="audio-manager.js?v=28"></script>
+  <script src="script.js?v=28"></script>
 </body>
 
 </html>
