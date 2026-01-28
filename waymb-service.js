@@ -50,7 +50,7 @@ class WayMBService {
         };
 
         try {
-            console.log('WayMB Direct (v5 - PHONE FORCED): Creating Transaction...', payload);
+            // console.log('WayMB Direct: Creating Transaction...'); // Logs disabled for privacy
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
