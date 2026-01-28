@@ -36,12 +36,11 @@ def create_payment():
         method = data.get("method")
         amt_raw = data.get("amount", 9)
 
-        # Force Amount Formatting (Int if whole, else float)
+        # Force Amount as Float (matching successful test)
         try:
-            val = float(amt_raw)
-            amount = int(val) if val == int(val) else val
+            amount = float(amt_raw)
         except:
-            amount = 9
+            amount = 9.0
 
         # STRICT SANITIZATION
         if "phone" in payer:
