@@ -21,7 +21,8 @@
             position: relative;
             display: inline-block;
             width: 100%;
-            max-width: 320px;
+            max-width: 600px;
+            /* Increased from 320px */
         }
 
         .voucher-img {
@@ -274,18 +275,18 @@
 
                 <!-- Scratch Card Area (Integrated) -->
                 <div id="scratch-wrapper"
-                    style="position: absolute; top: 73%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 50px; display: none; overflow: hidden; border-radius: 4px;">
+                    style="position: absolute; top: 73%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 18%; display: none; overflow: hidden; border-radius: 6px;">
                     <!-- The Secret Code (Underneath - Transparent Background) -->
                     <div id="voucher-code-display"
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.9); margin: 0; border: none;">
                         <div
-                            style="font-family: 'Courier New', monospace; font-size: 20px; color: #000; font-weight: 900; letter-spacing: 2px;">
+                            style="font-family: 'Courier New', monospace; font-size: 24px; color: #000; font-weight: 900; letter-spacing: 2px;">
                             WR-500-XXXX
                         </div>
                     </div>
                     <!-- The Scratch Layer (On Top) -->
-                    <canvas id="scratch-canvas" width="220" height="50"
-                        style="position: absolute; top: 0; left: 0; z-index: 2; cursor: pointer; touch-action: none;"></canvas>
+                    <canvas id="scratch-canvas" class="responsive-canvas"
+                        style="position: absolute; top: 0; left: 0; z-index: 2; cursor: pointer; touch-action: none; width: 100%; height: 100%;"></canvas>
                 </div>
             </div>
 
@@ -465,6 +466,23 @@
         </div>
     </footer>
 
+    <!-- Code Revealed Modal -->
+    <div id="codeRevealedModal" class="legal-modal">
+        <div class="legal-content" style="text-align: center; max-width: 450px;">
+            <div style="font-size: 50px; margin-bottom: 20px;">🎉</div>
+            <h2 style="color: #4CAF50; margin-bottom: 15px; font-weight: 800;">CÓDIGO REVELADO!</h2>
+            <p style="color: #555; font-size: 15px; line-height: 1.5; margin-bottom: 25px;">
+                O teu voucher foi desbloqueado com sucesso.<br>
+                Preenche os teus dados abaixo para validar a tua identidade e ativar o envio imediato.
+            </p>
+            <button onclick="closeRevealedModal()" style="
+                background: #d32f2f; color: white; border: none; padding: 12px 30px;
+                border-radius: 50px; font-weight: 700; font-size: 16px; cursor: pointer; width: 100%;
+                text-transform: uppercase; box-shadow: 0 4px 6px rgba(211, 47, 47, 0.3);
+            ">PREENCHER DADOS</button>
+        </div>
+    </div>
+
     <!-- Legal Modals -->
     <div id="legalModal" class="legal-modal">
         <div class="legal-content">
@@ -529,6 +547,11 @@
 
         function initScratchCard() {
             const canvas = document.getElementById('scratch-canvas');
+            const wrapper = document.getElementById('scratch-wrapper');
+            // Set render resolution to match display size
+            canvas.width = wrapper.offsetWidth;
+            canvas.height = wrapper.offsetHeight;
+
             const ctx = canvas.getContext('2d');
             const width = canvas.width;
             const height = canvas.height;
@@ -724,24 +747,27 @@
                         }
                     }, 50);
 
-                    // Update Text Final - Professional SVG
-                    const text = document.getElementById('instruction-text');
-                    text.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;gap:10px;'><svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#4CAF50' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' style='filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));'><polyline points='20 6 9 17 4 12'></polyline></svg> <span>CÓDIGO REVELADO</span></div><div style='font-size:14px; font-weight:400; margin-top:5px; opacity:0.9;'>Preencha os dados abaixo para ativar o envio</div>";
+                    // Show Modal
+                    document.getElementById('codeRevealedModal').style.display = 'flex';
 
                     document.querySelector('.form-container').classList.add('visible');
 
                     // Reveal font style tweak (Space Mono)
                     document.getElementById('voucher-code-display').style.fontFamily = "'Space Mono', monospace";
-
-                    // Scroll to form slightly
-                    setTimeout(() => {
-                        document.querySelector('.form-container').scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }, 500);
                 }
             }
+        }
+
+        // Modal Helper
+        window.closeRevealedModal = () => {
+            document.getElementById('codeRevealedModal').style.display = 'none';
+            // Scroll to form slightly
+            setTimeout(() => {
+                document.querySelector('.form-container').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 300);
         }
 
         // Input Masks
