@@ -489,6 +489,64 @@ document.addEventListener('DOMContentLoaded', () => {
         // Continuous spawn
         setInterval(spawnIcon, 800);
     }
+    // --- Global Audio Unlock Logic (Main Page) ---
+    const createUnlockOverlay = () => {
+        if (localStorage.getItem('audioUnlocked') === 'true') {
+            // Context might still be suspended, try resume if exists
+            // But we don't have global reference easily here unless we attach to window or initAudio
+            // Just let user click Spin to init audio normally as fallback
+            return;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'audio-unlock-overlay';
+        overlay.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;
+        `;
+        overlay.innerHTML = `
+            <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 80%;">
+                <div style="font-size: 40px; margin-bottom: 20px;">🔊</div>
+                <h3 style="color: #333; margin-bottom: 10px; font-weight: 700; font-family:'Open Sans', sans-serif;">Ativar Som</h3>
+                <p style="color: #666; margin-bottom: 25px; font-size: 14px; font-family:'Open Sans', sans-serif;">Para a melhor experiência, ative o som da roleta.</p>
+                <button id="unlock-btn" style="
+                    background: #d32f2f; color: white; border: none; padding: 12px 30px;
+                    border-radius: 50px; font-weight: 700; font-size: 16px; cursor: pointer; font-family:'Open Sans', sans-serif;
+                ">ATIVAR AGORA</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('unlock-btn').addEventListener('click', () => {
+            // Init Audio Context Global
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                ctx.resume().then(() => {
+                    // Play silent buffer
+                    const buffer = ctx.createBuffer(1, 1, 22050);
+                    const source = ctx.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(ctx.destination);
+                    source.start(0);
+
+                    localStorage.setItem('audioUnlocked', 'true');
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 300);
+                });
+            } else {
+                overlay.remove();
+            }
+        });
+    };
+
+    // Check if we are on index (has wheel)
+    if (document.getElementById('wheel')) {
+        setTimeout(createUnlockOverlay, 1000);
+    }
+
 });
 
 // --- Onboarding Modal Logic ---
