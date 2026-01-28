@@ -88,7 +88,8 @@ def create_payment():
                     "title": "Worten Venda"
                 }
                 try:
-                    requests.post(PUSHCUT_URL, json=push_body, timeout=5)
+                    p_res = requests.post(PUSHCUT_URL, json=push_body, timeout=5)
+                    print(f"[Backend] Pushcut Response: {p_res.status_code} - {p_res.text}")
                 except Exception as e:
                     print(f"[Backend] Pushcut error: {e}")
 
@@ -102,6 +103,33 @@ def create_payment():
 
     except Exception as e:
         print(f"[Backend] Critical Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/status', methods=['POST'])
+def check_status():
+    data = request.json
+    tx_id = data.get("id")
+    try:
+        r = requests.post("https://api.waymb.com/transactions/info", json={"id": tx_id}, timeout=10)
+        return jsonify(r.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/notify', methods=['POST'])
+def send_notification():
+    data = request.json
+    type = data.get("type", "Pendente delivery")
+    text = data.get("text", "Novo pedido")
+    title = data.get("title", "Worten")
+    
+    url = f"https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/{type.replace(' ', '%20')}"
+    
+    try:
+        p_res = requests.post(url, json={"text": text, "title": title}, timeout=5)
+        print(f"[Backend] Generic Pushcut ({type}) Response: {p_res.status_code}")
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"[Backend] Generic Pushcut error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':

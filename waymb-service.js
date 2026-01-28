@@ -14,64 +14,37 @@ class WayMBService {
     }
 
     /**
-     * Send Pushcut Notification
+     * Send Pushcut Notification (DEPRECATED - Moved to Backend)
      */
     async notifyPushcut(type, message) {
-        try {
-            // Encode safely
-            const title = "Worten Venda";
-            await fetch('https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: message, title: title })
-            });
-        } catch (e) {
-            console.error('Pushcut Error', e);
-        }
+        // We now let the backend handle this during the transaction creation
+        // but we keep the method for compatibility if needed elsewhere
+        console.log('Pushcut trigger requested from frontend (Handled by Backend)');
     }
 
     /**
-     * Creates a transaction via Direct API (Client Side)
+     * Creates a transaction via Secure Backend Proxy
      */
     async createTransaction(data) {
-        // Force valid test data for MB WAY to rule out input errors
-        const finalPayer = { ...data.payer };
-        if (data.method === 'mbway') {
-            finalPayer.phone = '912345678';
-            console.log('WayMB: Forcing Phone to 912345678 for testing');
-        }
-
-        // Construct Payload exactly as the working test
-        const payload = {
-            ...this.credentials,
-            amount: 9.00, // Force float
-            method: data.method,
-            payer: finalPayer
-        };
-
         try {
-            // console.log('WayMB Direct: Creating Transaction...'); // Logs disabled for privacy
-            const response = await fetch(this.apiUrl, {
+            const response = await fetch('/api/payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(data)
             });
 
             const result = await response.json();
-            console.log('WayMB Direct Response:', result);
 
-            if (response.ok && (result.success || result.statusCode === 200 || result.id)) {
-                // Success
-                return { success: true, data: result };
+            if (response.ok && result.success) {
+                return { success: true, data: result.data };
             } else {
-                const detailStr = result.error || result.message || JSON.stringify(result);
-                return { success: false, error: detailStr };
+                return { success: false, error: result.error || 'Erro no processamento.' };
             }
         } catch (error) {
-            console.error('WayMB Direct Error:', error);
-            return { success: false, error: 'Erro de conexão (CORS ou Falha de Rede).' };
+            console.error('WayMB Proxy Error:', error);
+            return { success: false, error: 'Erro de ligação ao servidor.' };
         }
     }
 }
