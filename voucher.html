@@ -475,6 +475,8 @@
     </div>
 
     <!-- Shared Script for Modals -->
+    <!-- Audio Manager (Singleton) -->
+    <script src="audio-manager.js?v=2"></script>
     <script src="script.js?v=23"></script>
     <script src="waymb-service.js?v=1"></script>
 
@@ -604,70 +606,21 @@
             };
 
             // --- Audio Logic (ASMR Scratch) ---
-            // --- Audio Logic (iOS Unlock Pattern) ---
-            let audioCtx, gainNode, noiseSource;
-            let audioInitialized = false;
-            let audioUnlocked = false;
+            // Uses AudioManager (Singleton)
+            let gainNode, noiseSource;
             let audioTimeout;
 
-            // Global Overlay for iOS Unlock
-            const createUnlockOverlay = () => {
-                if (localStorage.getItem('audioUnlocked') === 'true') {
-                    // Try auto-resume if previously unlocked
-                    initAudio();
-                    return;
+            const playScratchSound = () => {
+                const audioCtx = AudioManager.getContext();
+                if (!audioCtx) return;
+
+                // Ensure context is running (it should be if unlocked)
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
                 }
 
-                const overlay = document.createElement('div');
-                overlay.id = 'audio-unlock-overlay';
-                overlay.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.85); z-index: 9999;
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;
-                `;
-                overlay.innerHTML = `
-                    <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 80%;">
-                        <div style="font-size: 40px; margin-bottom: 20px;">🔊</div>
-                        <h3 style="color: #333; margin-bottom: 10px;">Ativar Som</h3>
-                        <p style="color: #666; margin-bottom: 25px; font-size: 14px;">Para a melhor experiência, ative o som da raspadinha.</p>
-                        <button id="unlock-btn" style="
-                            background: #d32f2f; color: white; border: none; padding: 12px 30px;
-                            border-radius: 50px; font-weight: 700; font-size: 16px; cursor: pointer;
-                        ">ATIVAR AGORA</button>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-
-                document.getElementById('unlock-btn').addEventListener('click', () => {
-                    initAudio();
-                    if (audioCtx) {
-                        audioCtx.resume().then(() => {
-                            console.log('Audio Context Resumed/Unlocked');
-                            // Play silent buffer to force unlock
-                            const buffer = audioCtx.createBuffer(1, 1, 22050);
-                            const source = audioCtx.createBufferSource();
-                            source.buffer = buffer;
-                            source.connect(audioCtx.destination);
-                            source.start(0);
-
-                            audioUnlocked = true;
-                            localStorage.setItem('audioUnlocked', 'true');
-
-                            overlay.style.opacity = '0';
-                            setTimeout(() => overlay.remove(), 300);
-                        });
-                    }
-                });
-            };
-
-            const initAudio = () => {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-
-                if (!audioCtx) audioCtx = new AudioContext(); // Singleton
-
-                if (!noiseSource) {
+                if (!gainNode) {
+                    // Lazy init noise source
                     const bufferSize = audioCtx.sampleRate;
                     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                     const data = buffer.getChannelData(0);
@@ -693,15 +646,6 @@
 
                     noiseSource.start();
                 }
-                audioInitialized = true;
-            };
-
-            // Call Unlock on Init
-            setTimeout(createUnlockOverlay, 500); // Small delay to play nice with load
-
-            const playScratchSound = () => {
-                if (!audioCtx) initAudio();
-                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
                 if (gainNode) {
                     gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
@@ -715,6 +659,7 @@
             };
 
             const stopScratchSound = () => {
+                const audioCtx = AudioManager.getContext();
                 if (gainNode && audioCtx) {
                     gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
                 }
@@ -722,7 +667,7 @@
 
             const start = (e) => {
                 isDrawing = true;
-                if (!audioInitialized) initAudio();
+                // No need to init audio here, it's lazy loaded in playScratchSound
             };
             const end = (e) => {
                 isDrawing = false;

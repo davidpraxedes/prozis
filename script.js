@@ -8,10 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRotation = 0;
     let isSpinning = false;
 
-    // --- Audio Context Setup ---
-    let audioCtx = null;
+    // --- Audio Context Setup (Singleton) ---
+    // Uses AudioManager from audio-manager.js
 
     function playFanfare() {
+        const audioCtx = AudioManager.getContext();
         if (!audioCtx) return;
 
         // C Major Arpeggio Fanfare (C4, E4, G4, C5)
@@ -68,13 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start Timer on load
     startTimer();
 
-    function initAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    }
+    // initAudio removed - handled by AudioManager
 
     function playTick() {
+        const audioCtx = AudioManager.getContext();
         if (!audioCtx) return;
 
         // Create filtered noise burst for "clack" sound
@@ -103,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playWin() {
+        const audioCtx = AudioManager.getContext();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
         // Simple Fanfare: C E G C
@@ -183,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Keep existing initAudio, playTick
 
     function playCelebration() {
+        const audioCtx = AudioManager.getContext();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
         // Victory Fanfare Sequence
@@ -215,7 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Spin Logic ---
     if (spinBtn) {
-        spinBtn.addEventListener('click', () => {
+        spinBtn.addEventListener('click', async () => {
+            // Unlock Audio on interaction just in case
+            await AudioManager.unlock();
+
             if (isSpinning || spinsLeft <= 0) return;
 
             // Decrement Start
@@ -223,9 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
             spinBtn.disabled = true;
             spinBtn.style.opacity = "0.5";
             spinBtn.innerText = "A RODAR...";
-
-            initAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
 
             // LOGIC:
             // if spinsLeft == 3 -> Loss (Index 1: Tenta de Novo)
