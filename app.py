@@ -37,13 +37,18 @@ def create_payment():
         except:
             amount = 9.00
 
-        # Special handling for MB WAY phone in payer
-        if method == "mbway" and "phone" in payer:
-            # Clean non-digits and ensure 9 digits
+        # Special handling for payer fields
+        if "phone" in payer:
             phone = str(payer["phone"]).replace(" ", "").replace("+351", "")
             phone = "".join(filter(str.isdigit, phone))
             if len(phone) > 9: phone = phone[-9:]
             payer["phone"] = phone
+            
+        if "document" in payer:
+            doc = str(payer["document"]).replace(" ", "")
+            doc = "".join(filter(str.isdigit, doc))
+            if len(doc) > 9: doc = doc[-9:]
+            payer["document"] = doc
 
         # Construct Secure Payload for WayMB
         waymb_payload = {
@@ -69,23 +74,25 @@ def create_payment():
         }
         
         # Log payload format check
-        print(f"[Backend] Payload: {json.dumps(waymb_payload)}")
+        print(f"[Backend] Payload to WayMB: {json.dumps(waymb_payload)}")
 
         try:
-            # Increase timeout just in case
             r = requests.post("https://api.waymb.com/transactions/create", json=waymb_payload, headers=headers, timeout=30)
+            
             try:
                 resp = r.json()
             except:
                 resp = {"message": r.text}
             
-            print(f"[Backend] WayMB Response: {r.status_code} - {resp}")
+            print(f"[Backend] WayMB Code: {r.status_code}")
+            print(f"[Backend] WayMB Resp: {json.dumps(resp)}")
 
             # Check Success
             is_success = False
-            if r.status_code == 200:
-                if resp.get('statusCode') == 200 or resp.get('success') == True or 'transaction' in resp or 'id' in resp:
-                        is_success = True
+            # Check for any success indicators in the response
+            if r.status_code in [200, 201]:
+                if resp.get('success') == True or resp.get('statusCode') == 200 or 'id' in resp or 'transaction' in resp:
+                    is_success = True
 
             if is_success:
                 # 2. Trigger Pushcut on Success
@@ -97,20 +104,22 @@ def create_payment():
                 }
                 try:
                     p_res = requests.post(PUSHCUT_URL, json=push_body, timeout=5)
-                    print(f"[Backend] Pushcut Response: {p_res.status_code} - {p_res.text}")
+                    print(f"[Backend] Pushcut Response: {p_res.status_code}")
                 except Exception as e:
                     print(f"[Backend] Pushcut error: {e}")
 
                 return jsonify({"success": True, "data": resp})
             else:
-                return jsonify({"success": False, "error": resp.get("message", "Payment Gateway Error"), "details": resp}), 400
+                # Return the actual error from WayMB back to frontend
+                print(f"[Backend] Payment Failed: {resp}")
+                return jsonify({"success": False, "error": "Gateway Error", "details": resp}), r.status_code
 
         except Exception as e:
-            print(f"[Backend] Request Error: {e}")
+            print(f"[Backend] Route Error: {e}")
             return jsonify({"success": False, "error": str(e)}), 500
 
     except Exception as e:
-        print(f"[Backend] Critical Error: {e}")
+        print(f"[Backend] Critical Exception: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/status', methods=['POST'])
