@@ -168,6 +168,45 @@ def send_notification():
     except:
         return jsonify({"success": False}), 500
 
+@app.route('/api/webhook/mbway', methods=['POST'])
+def mbway_webhook():
+    try:
+        # Log the incoming payload for debug
+        data = request.json or {}
+        log(f"WEBHOOK RECEIVED: {json.dumps(data)}")
+
+        # Try to extract amount from payload (assuming structure based on common gateways)
+        # If structure is unknown, we default to generic message
+        amount = 0.0
+        
+        # Heuristic to find amount in common fields if not explicit
+        if "amount" in data:
+            try: amount = float(data["amount"])
+            except: pass
+        elif "valor" in data:
+            try: amount = float(data["valor"])
+            except: pass
+            
+        # Determine Pushcut URL
+        target_pushcut = PUSHCUT_URL # Promo (9.90) default
+        if abs(amount - 9.00) < 0.01:
+            target_pushcut = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"
+        
+        # Prepare Notification
+        msg_text = f"Pagamento Confirmado: {amount}€" if amount > 0 else "Pagamento MBWAY Recebido!"
+        
+        # Send to Pushcut
+        requests.post(target_pushcut, json={
+            "text": msg_text, 
+            "title": "Worten Sucesso"
+        }, timeout=4)
+        
+        return jsonify({"status": "received"}), 200
+
+    except Exception as e:
+        log(f"Webhook Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port)
