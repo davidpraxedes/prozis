@@ -134,9 +134,23 @@
 
         .payment-option:hover,
         .payment-option.selected {
-            border-color: #d32f2f;
-            background: #fff5f5;
+            border-color: #2e7d32;
+            background: #f1f8e9;
         }
+
+        .badge-most-used {
+            position: absolute;
+            top: -10px;
+            background: #2e7d32;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            display: none;
+        }
+
+        /* Show badge only inside selected payment option if needed, but here we control via inline block toggling or specific structure */
 
         .payment-logo {
             max-width: 100%;
@@ -159,6 +173,37 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: transform 0.1s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .validation-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            50% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         .validation-btn:active {
@@ -250,20 +295,23 @@
         <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 15px;">Selecione o método para validar:</h3>
 
         <div class="payment-grid">
-            <div class="payment-option" onclick="selectPayment(this, 'mbway')"
-                style="border-color: #2e7d32; background: #f1f8e9; position: relative;">
-                <div
-                    style="position: absolute; top: -10px; background: #2e7d32; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700;">
-                    MAIS USADO</div>
+            <div class="payment-option selected" onclick="selectPayment(this, 'mbway')" style="position: relative;">
+                <div class="badge-most-used" style="display: block;">MAIS USADO</div>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Logo_MBWay.svg/1280px-Logo_MBWay.svg.png"
                     class="payment-logo" alt="MB WAY">
-                <p style="margin: 5px 0 0; font-size: 11px; color: #2e7d32; font-weight: 600;">Libertação Imediata ⚡</p>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 5px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#2e7d32" stroke="#2e7d32" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span style="font-size: 11px; color: #2e7d32; font-weight: 600;">Ativação imediata do voucher</span>
+                </div>
             </div>
 
             <div class="payment-option" onclick="selectPayment(this, 'multibanco')">
                 <img src="https://www.multibanco.pt/wp-content/uploads/2025/01/Multibanco-Logo-CMYK.svg"
                     class="payment-logo" alt="Multibanco">
-                <p style="margin: 5px 0 0; font-size: 11px; color: #777;">Pode demorar +15min</p>
+                <p style="margin: 5px 0 0; font-size: 11px; color: #777;">Pode demorar +24h</p>
             </div>
         </div>
 
