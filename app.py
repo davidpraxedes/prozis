@@ -26,6 +26,11 @@ def index():
 def static_files(path):
     return send_from_directory('.', path)
 
+@app.route('/promo')
+def promo_index():
+    return send_from_directory('promo', 'index.html')
+
+
 @app.route('/api/payment', methods=['POST'])
 def create_payment():
     try:
