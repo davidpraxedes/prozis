@@ -1,12 +1,21 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from models import db, User, Visitor, PageMetric, Order
 import requests
 import os
 import json
 import sys
+import datetime
+import uuid
 
 app = Flask(__name__, static_folder='.')
+app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_123") # Change in production
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 CORS(app)
+db.init_app(app)
 
 # Credentials
 CLIENT_ID = os.environ.get("WAYMB_CLIENT_ID", "modderstore_c18577a3")
@@ -14,9 +23,251 @@ CLIENT_SECRET = os.environ.get("WAYMB_CLIENT_SECRET", "850304b9-8f36-4b3d-880f-3
 ACCOUNT_EMAIL = os.environ.get("WAYMB_ACCOUNT_EMAIL", "modderstore@gmail.com")
 PUSHCUT_URL = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery"
 
+# Initialize DB
+with app.app_context():
+    db.create_all()
+    # Create default admin if not exists
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin', password='adminpassword') # Default password
+        db.session.add(admin)
+        db.session.commit()
+        print("[INIT] Default Admin created: admin / adminpassword")
+
 def log(msg):
     print(f"[BACKEND] {msg}")
     sys.stdout.flush()
+
+def get_location_data(ip):
+    try:
+        # Don't track local dev
+        if ip in ['127.0.0.1', 'localhost']: return "Localhost", "Local"
+        r = requests.get(f"http://ip-api.com/json/{ip}", timeout=3)
+        data = r.json()
+        if data.get('status') == 'success':
+            return data.get('city', 'Unknown'), data.get('country', 'Unknown')
+    except:
+        pass
+    return "Unknown", "Unknown"
+
+# --- Tracking API ---
+
+@app.route('/api/track/init', methods=['POST'])
+def track_init():
+    try:
+        data = request.json
+        sid = data.get('session_id')
+        path = data.get('path')
+        ip = request.remote_addr
+        
+        visitor = Visitor.query.filter_by(session_id=sid).first()
+        if not visitor:
+            city, country = get_location_data(ip)
+            visitor = Visitor(
+                session_id=sid,
+                ip_address=ip,
+                city=city,
+                country=country,
+                user_agent=request.headers.get('User-Agent')
+            )
+            db.session.add(visitor)
+        
+        visitor.last_seen = datetime.datetime.utcnow()
+        visitor.current_page = path
+        db.session.commit()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/track/heartbeat', methods=['POST'])
+def track_heartbeat(): # Supports Beacon (text/plain) or JSON
+    try:
+        if request.content_type == 'text/plain': # Beacon sometimes sends as text
+            data = json.loads(request.data)
+        else:
+            data = request.json
+
+        sid = data.get('session_id')
+        path = data.get('path')
+        duration = float(data.get('duration', 0))
+
+        visitor = Visitor.query.filter_by(session_id=sid).first()
+        if visitor:
+            visitor.last_seen = datetime.datetime.utcnow()
+            visitor.current_page = path
+            
+            # Update Page Metric
+            metric = PageMetric.query.filter_by(visitor_id=visitor.id, page_path=path).first()
+            if not metric:
+                metric = PageMetric(visitor_id=visitor.id, page_path=path)
+                db.session.add(metric)
+            
+            # Only update if duration increases (simple max-hold logic for session)
+            if duration > metric.duration_seconds:
+                metric.duration_seconds = duration
+                
+            db.session.commit()
+    except Exception as e:
+        log(f"Tracking Error: {e}")
+    return jsonify({"status": "ok"})
+
+
+# --- Admin Routes ---
+
+def login_required(f):
+    def wrapper(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect('/admin/login')
+        return f(*args, **kwargs)
+    wrapper.__name__ = f.__name__
+    return wrapper
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username, password=password).first()
+        if user:
+            session['logged_in'] = True
+            return redirect('/admin/dashboard')
+        return "Login Failed"
+    return render_template_string("""
+        <form method="post" style="margin: 50px auto; width: 300px; display: flex; flex-direction: column; gap: 10px;">
+            <h2>Admin Login</h2>
+            <input name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    """)
+
+@app.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    # Active visitors in last 5 minutes
+    limit_time = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+    active_visitors = Visitor.query.filter(Visitor.last_seen >= limit_time).order_by(Visitor.last_seen.desc()).all()
+    
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Live Dashboard</title>
+        <meta http-equiv="refresh" content="5">
+        <style>
+            body { font-family: sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+            th { background-color: #f4f4f4; }
+            .status { color: green; font-weight: bold; }
+            .nav { margin-bottom: 20px; }
+            .nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+        </style>
+    </head>
+    <body>
+        <div class="nav">
+            <a href="/admin/dashboard"><b>Live View</b></a>
+            <a href="/admin/orders">Orders</a>
+            <a href="/logout">Logout</a>
+        </div>
+        <h1>Live Visitors ('Active in last 5m')</h1>
+        <table>
+            <tr>
+                <th>IP</th>
+                <th>City/Country</th>
+                <th>Current Page</th>
+                <th>Last Seen</th>
+                <th>Session Duration</th>
+            </tr>
+            {% for v in visitors %}
+            <tr>
+                <td>{{ v.ip_address }}</td>
+                <td>{{ v.city }}, {{ v.country }}</td>
+                <td>{{ v.current_page }}</td>
+                <td>{{ v.last_seen.strftime('%H:%M:%S') }}</td>
+                <td>
+                   {% set total = 0 %}
+                   {% for m in v.page_metrics %}
+                     {% set total = total + m.duration_seconds %}
+                   {% endfor %}
+                   {{ total|round|int }}s
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+    </html>
+    """, visitors=active_visitors)
+
+@app.route('/admin/orders')
+@login_required
+def admin_orders():
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Orders</title>
+        <style>
+            body { font-family: sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { padding: 8px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
+            th { background-color: #f4f4f4; }
+            .details { font-size: 12px; color: #555; }
+            .nav { margin-bottom: 20px; }
+            .nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+            pre { margin: 0; white-space: pre-wrap; }
+        </style>
+    </head>
+    <body>
+        <div class="nav">
+            <a href="/admin/dashboard">Live View</a>
+            <a href="/admin/orders"><b>Orders</b></a>
+            <a href="/logout">Logout</a>
+        </div>
+        <h1>All Orders</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Customer Data</th>
+                <th>Visit History (Time on Pages)</th>
+            </tr>
+            {% for o in orders %}
+            <tr>
+                <td>{{ o.id }}</td>
+                <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ o.amount }}€</td>
+                <td>{{ o.method }}</td>
+                <td>
+                    <pre>{{ o.customer_data }}</pre>
+                </td>
+                <td>
+                    {% if o.visitor %}
+                        <ul>
+                        {% for m in o.visitor.page_metrics %}
+                            <li><b>{{ m.page_path }}:</b> {{ m.duration_seconds|round|int }}s</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span style="color:red">No Session Linked</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+    </html>
+    """, orders=orders)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect('/admin/login')
+
+# --- Public Routes ---
 
 @app.route('/')
 def index():
@@ -40,6 +291,17 @@ def create_payment():
         payer = data.get("payer", {})
         method = data.get("method")
         amt_raw = data.get("amount", 9)
+        # Try to link session
+        try:
+             # Just a heuristic, we can pass session_id from frontend if needed, 
+             # but IP matching is okay-ish for MVP or we add it to payload later.
+             # For now let's hope frontend generates tracked session.
+             # Actually, best practice is to pass header or payload.
+             # Let's assume frontend sends nothing specialized yet, so we match by IP (latest active session on IP)
+             ip = request.remote_addr
+             visitor = Visitor.query.filter_by(ip_address=ip).order_by(Visitor.last_seen.desc()).first()
+        except:
+            visitor = None
 
         # Force Amount as Float (matching successful test)
         try:
@@ -53,13 +315,11 @@ def create_payment():
             if p.startswith("351") and len(p) > 9: p = p[3:]
             if len(p) > 9: p = p[-9:]
             payer["phone"] = p
-            log(f"Sanitized Phone: {p}")
             
         if "document" in payer:
             d = "".join(filter(str.isdigit, str(payer["document"])))
             if len(d) > 9: d = d[-9:]
             payer["document"] = d
-            log(f"Sanitized NIF: {d}")
 
         # Construct WayMB Body (without currency to match working test)
         waymb_body = {
@@ -71,7 +331,7 @@ def create_payment():
             "payer": payer
         }
         
-        log(f"Calling WayMB API with: {json.dumps(waymb_body)}")
+        log(f"Calling WayMB API...")
 
         try:
             r = requests.post("https://api.waymb.com/transactions/create", 
@@ -79,9 +339,6 @@ def create_payment():
                              headers={'Content-Type': 'application/json'}, 
                              timeout=30)
             
-            log(f"WayMB Status Code: {r.status_code}")
-            log(f"WayMB Raw Response: {r.text}")
-
             try:
                 resp = r.json()
             except:
@@ -94,8 +351,19 @@ def create_payment():
 
             if is_ok:
                 log("Payment Created OK.")
+                
+                # SAVE ORDER TO DB
+                new_order = Order(
+                    amount=amount,
+                    method=method,
+                    status="CREATED",
+                    customer_data=json.dumps(payer, indent=2),
+                    visitor_id=visitor.id if visitor else None
+                )
+                db.session.add(new_order)
+                db.session.commit()
+
                 # Notify Pushcut
-                # Logic: 9.00 -> Root (New URL) | 9.90 -> Promo (Old URL)
                 try:
                     target_pushcut = PUSHCUT_URL # Default (Old/Promo)
                     if abs(amount - 9.00) < 0.01:
@@ -106,10 +374,22 @@ def create_payment():
                         "title": "Worten Promo"
                     }, timeout=3)
                 except: pass
+                
                 return jsonify({"success": True, "data": resp})
             else:
                 log(f"Payment Failed by Gateway: {resp}")
-                # Return success: False BUT with details
+                
+                 # SAVE FAILED ORDER ATTEMPT? (Optional, let's save for debug)
+                failed_order = Order(
+                    amount=amount,
+                    method=method,
+                    status="FAILED_GATEWAY",
+                    customer_data=json.dumps(payer, indent=2),
+                    visitor_id=visitor.id if visitor else None
+                )
+                db.session.add(failed_order)
+                db.session.commit()
+
                 return jsonify({
                     "success": False, 
                     "error": resp.get("error", "Gateway Rejection"),
@@ -142,22 +422,12 @@ def send_notification():
     text = data.get("text", "Novo pedido")
     title = data.get("title", "Worten")
     
-    # Determine base URL based on amount/context if passed, otherwise default logic
-    # Ideally should pass a flag, but for now let's stick to the requested change:
-    # Root (9.00) -> New URL. Promo (9.90) -> Old URL.
-    # The client calls this endpoint for 'Aprovado delivery'. 
-    # We need to know which flow it is.
-    # Let's check text content for price as a heuristic since client sends "9,90 €" or "9,00 €"
-    
-    base_url = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications" # Old/Promo
+    base_url = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications" 
     if "9,00" in text or "9.00" in text:
-        base_url = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications" # New/Root
+        base_url = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications"
         
-    # Handle "venda aprovada" mapping if needed
     safe_type = type.replace(' ', '%20')
     if base_url != "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications":
-       # For the new API, the user specified ".../notifications/venda%20aprovada%20"
-       # If the type is 'Aprovado delivery', we might want to map it to 'venda aprovada'
        if type == "Aprovado delivery":
            safe_type = "venda%20aprovada%20"
     
@@ -171,15 +441,10 @@ def send_notification():
 @app.route('/api/webhook/mbway', methods=['POST'])
 def mbway_webhook():
     try:
-        # Log the incoming payload for debug
         data = request.json or {}
         log(f"WEBHOOK RECEIVED: {json.dumps(data)}")
 
-        # Try to extract amount from payload (assuming structure based on common gateways)
-        # If structure is unknown, we default to generic message
         amount = 0.0
-        
-        # Heuristic to find amount in common fields if not explicit
         if "amount" in data:
             try: amount = float(data["amount"])
             except: pass
@@ -187,15 +452,12 @@ def mbway_webhook():
             try: amount = float(data["valor"])
             except: pass
             
-        # Determine Pushcut URL
-        target_pushcut = PUSHCUT_URL # Promo (9.90) default
+        target_pushcut = PUSHCUT_URL 
         if abs(amount - 9.00) < 0.01:
             target_pushcut = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"
         
-        # Prepare Notification
         msg_text = f"Pagamento Confirmado: {amount}€" if amount > 0 else "Pagamento MBWAY Recebido!"
         
-        # Send to Pushcut
         requests.post(target_pushcut, json={
             "text": msg_text, 
             "title": "Worten Sucesso"
