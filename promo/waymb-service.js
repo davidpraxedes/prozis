@@ -5,12 +5,7 @@
  */
 class WayMBService {
     constructor() {
-        this.apiUrl = 'https://api.waymb.com/transactions/create';
-        this.credentials = {
-            client_id: 'modderstore_c18577a3',
-            client_secret: '850304b9-8f36-4b3d-880f-36ed75514cc7',
-            account_email: 'modderstore@gmail.com'
-        };
+        this.apiUrl = '/api/payment'; // Use proxy directly
     }
 
     /**
