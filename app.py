@@ -45,6 +45,12 @@ with app.app_context():
                 conn.execute(text("ALTER TABLE 'order' ADD COLUMN traffic_source VARCHAR(100)"))
                 conn.commit()
 
+            # Check checkout_id in order
+            if 'checkout_id' not in columns:
+                print("[MIGRATION] Adding 'checkout_id' column to 'order' table")
+                conn.execute(text("ALTER TABLE 'order' ADD COLUMN checkout_id VARCHAR(100)"))
+                conn.commit()
+
             # Check traffic_source in visitor
             result = conn.execute(text("PRAGMA table_info('visitor')"))
             v_columns = [row[1] for row in result]
@@ -561,6 +567,14 @@ def logout():
     session.pop('logged_in', None)
     return redirect('/admin/login')
 
+@app.route('/admin/order/<int:order_id>/mark-paid', methods=['POST'])
+@login_required
+def mark_order_paid(order_id):
+    order = Order.query.get_or_404(order_id)
+    order.status = "PAID"
+    db.session.commit()
+    return redirect('/admin/orders')
+
 # --- Public Routes ---
 
 @app.route('/')
@@ -656,7 +670,8 @@ def create_payment():
                     flow=flow,
                     traffic_source=data.get('traffic_source') or (visitor.traffic_source if visitor else None),
                     customer_data=json.dumps(payer, indent=2),
-                    visitor_id=visitor.id if visitor else None
+                    visitor_id=visitor.id if visitor else None,
+                    checkout_id=str(resp.get("id", "")) # Request ID from WayMB
                 )
                 db.session.add(new_order)
                 db.session.commit()
@@ -750,9 +765,33 @@ def mbway_webhook():
         elif "valor" in data:
             try: amount = float(data["valor"])
             except: pass
+            
+        # Try to match Order by ID (if provided)
+        tx_id = data.get("id") or data.get("transaction_id")
+        order = None
         
-        # Determine flow by amount (12.49 = root, 12.50 = promo)
-        flow = "root" if abs(amount - 12.49) < 0.01 else "promo"
+        if tx_id:
+            order = Order.query.filter_by(checkout_id=str(tx_id)).first()
+            
+        # Fallback: Match by amount + OPEN status (last 30m)
+        if not order and amount > 0:
+            # recent orders matching amount
+            order = Order.query.filter(
+                Order.amount == amount, 
+                Order.status != "PAID",
+                Order.created_at >= datetime.utcnow() - timedelta(minutes=30)
+            ).order_by(Order.created_at.desc()).first()
+
+        if order:
+            order.status = "PAID"
+            db.session.commit()
+            log(f"Order #{order.id} marked as PAID via Webhook")
+            
+            # Use order flow for notification
+            flow = order.flow
+        else:
+            # Fallback flow deduction
+            flow = "root" if abs(amount - 12.49) < 0.01 else "promo"
         
         if flow == "root":
             target_pushcut = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"
@@ -761,6 +800,7 @@ def mbway_webhook():
         
         msg_text = f"Pagamento Confirmado: {amount}€" if amount > 0 else "Pagamento MBWAY Recebido!"
         
+        # Only notify if we haven't already (optional logic, but for now just notify)
         requests.post(target_pushcut, json={
             "text": msg_text, 
             "title": "Worten Sucesso"
