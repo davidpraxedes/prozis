@@ -9,7 +9,7 @@ import sys
 import datetime
 import uuid
 
-app = Flask(__name__, static_folder='.')
+app = Flask(__name__, static_folder='.', template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_123") # Change in production
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
