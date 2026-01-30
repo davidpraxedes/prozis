@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template_string, session, redirect, url_for
+from flask import Flask, request, jsonify, send_from_directory, render_template_string, render_template, session, redirect, url_for
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Visitor, PageMetric, Order
