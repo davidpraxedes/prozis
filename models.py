@@ -43,6 +43,7 @@ class Order(db.Model):
     amount = db.Column(db.Float, nullable=False)
     method = db.Column(db.String(50), nullable=False) # MBWAY, MULTIBANCO
     status = db.Column(db.String(50), default="PENDING")
+    flow = db.Column(db.String(20), default="promo") # root or promo
     
     # Customer Data (JSON stored as text for flexibility)
     customer_data = db.Column(db.Text) # Stores phone, name, nif, etc.

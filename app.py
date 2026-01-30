@@ -26,6 +26,21 @@ PUSHCUT_URL = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Penden
 # Initialize DB
 with app.app_context():
     db.create_all()
+    
+    # Check if 'flow' column exists in 'order' table (Migration helper)
+    try:
+        from sqlalchemy import text
+        with db.engine.connect() as conn:
+            # Check columns
+            result = conn.execute(text("PRAGMA table_info('order')"))
+            columns = [row[1] for row in result]
+            if 'flow' not in columns:
+                print("[MIGRATION] Adding 'flow' column to 'order' table")
+                conn.execute(text("ALTER TABLE 'order' ADD COLUMN flow VARCHAR(20) DEFAULT 'promo'"))
+                conn.commit()
+    except Exception as e:
+        print(f"[MIGRATION ERROR] {e}")
+
     # Create default admin if not exists
     if not User.query.filter_by(username='admin').first():
         admin = User(username='admin', password='adminpassword') # Default password
@@ -555,6 +570,8 @@ def create_payment():
         payer = data.get("payer", {})
         method = data.get("method")
         amt_raw = data.get("amount", 9)
+        flow = data.get("flow", "promo") # Get flow source
+        
         # Try to link session
         try:
              # Just a heuristic, we can pass session_id from frontend if needed, 
@@ -562,7 +579,7 @@ def create_payment():
              # For now let's hope frontend generates tracked session.
              # Actually, best practice is to pass header or payload.
              # Let's assume frontend sends nothing specialized yet, so we match by IP (latest active session on IP)
-             ip = request.remote_addr
+             ip = get_client_ip()
              visitor = Visitor.query.filter_by(ip_address=ip).order_by(Visitor.last_seen.desc()).first()
         except:
             visitor = None
@@ -621,6 +638,7 @@ def create_payment():
                     amount=amount,
                     method=method,
                     status="CREATED",
+                    flow=flow,
                     customer_data=json.dumps(payer, indent=2),
                     visitor_id=visitor.id if visitor else None
                 )
@@ -628,9 +646,7 @@ def create_payment():
                 db.session.commit()
 
                 # Notify Pushcut
-                try:
-                    flow = data.get("flow", "promo")  # Default to promo for backward compat
-                    
+                try:                    
                     if flow == "root":
                         # ROOT Flow - Single Pushcut B endpoint
                         target_pushcut = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"

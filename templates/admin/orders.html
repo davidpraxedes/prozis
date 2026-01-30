@@ -42,6 +42,7 @@
             font-weight: 700;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -239,6 +240,16 @@
             color: #1e40af;
         }
 
+        .badge.root {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .badge.promo {
+            background: #f3e8ff;
+            color: #7e22ce;
+        }
+
         .customer-data {
             font-size: 12px;
             color: #64748b;
@@ -374,6 +385,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Data</th>
+                        <th>Fonte</th>
                         <th>Valor</th>
                         <th>Método</th>
                         <th>Dados do Cliente</th>
@@ -385,6 +397,11 @@
                     <tr>
                         <td><strong>#{{ o.id }}</strong></td>
                         <td>{{ o.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <span class="badge {{ o.flow|default('promo') }}">
+                                {{ (o.flow|default('promo')).upper() }}
+                            </span>
+                        </td>
                         <td><strong>{{ o.amount }}€</strong></td>
                         <td>
                             <span class="badge {{ 'mbway' if o.method.lower() == 'mbway' else 'multibanco' }}">
