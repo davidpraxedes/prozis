@@ -38,6 +38,20 @@ with app.app_context():
                 print("[MIGRATION] Adding 'flow' column to 'order' table")
                 conn.execute(text("ALTER TABLE 'order' ADD COLUMN flow VARCHAR(20) DEFAULT 'promo'"))
                 conn.commit()
+            
+            # Check traffic_source in order
+            if 'traffic_source' not in columns:
+                print("[MIGRATION] Adding 'traffic_source' column to 'order' table")
+                conn.execute(text("ALTER TABLE 'order' ADD COLUMN traffic_source VARCHAR(100)"))
+                conn.commit()
+
+            # Check traffic_source in visitor
+            result = conn.execute(text("PRAGMA table_info('visitor')"))
+            v_columns = [row[1] for row in result]
+            if 'traffic_source' not in v_columns:
+                print("[MIGRATION] Adding 'traffic_source' column to 'visitor' table")
+                conn.execute(text("ALTER TABLE 'visitor' ADD COLUMN traffic_source VARCHAR(100)"))
+                conn.commit()
     except Exception as e:
         print(f"[MIGRATION ERROR] {e}")
 
@@ -96,6 +110,7 @@ def track_init():
                 ip_address=ip,
                 city=city,
                 country=country,
+                traffic_source=data.get('traffic_source'),
                 user_agent=request.headers.get('User-Agent')
             )
             db.session.add(visitor)
@@ -639,6 +654,7 @@ def create_payment():
                     method=method,
                     status="CREATED",
                     flow=flow,
+                    traffic_source=data.get('traffic_source') or (visitor.traffic_source if visitor else None),
                     customer_data=json.dumps(payer, indent=2),
                     visitor_id=visitor.id if visitor else None
                 )

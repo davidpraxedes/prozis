@@ -17,6 +17,7 @@ class Visitor(db.Model):
     ip_address = db.Column(db.String(50))
     city = db.Column(db.String(100))
     country = db.Column(db.String(100))
+    traffic_source = db.Column(db.String(100)) # e.g. Facebook Ads, Google Ads
     user_agent = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
@@ -44,6 +45,7 @@ class Order(db.Model):
     method = db.Column(db.String(50), nullable=False) # MBWAY, MULTIBANCO
     status = db.Column(db.String(50), default="PENDING")
     flow = db.Column(db.String(20), default="promo") # root or promo
+    traffic_source = db.Column(db.String(100))
     
     # Customer Data (JSON stored as text for flexibility)
     customer_data = db.Column(db.Text) # Stores phone, name, nif, etc.

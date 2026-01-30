@@ -250,6 +250,12 @@
             color: #7e22ce;
         }
 
+        .badge.source {
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 500;
+        }
+
         .customer-data {
             font-size: 12px;
             color: #64748b;
@@ -386,6 +392,7 @@
                         <th>ID</th>
                         <th>Data</th>
                         <th>Fonte</th>
+                        <th>Origem</th>
                         <th>Valor</th>
                         <th>Método</th>
                         <th>Dados do Cliente</th>
@@ -401,6 +408,9 @@
                             <span class="badge {{ o.flow|default('promo') }}">
                                 {{ (o.flow|default('promo')).upper() }}
                             </span>
+                        </td>
+                        <td>
+                            <span class="badge source">{{ o.traffic_source|default('Direct') }}</span>
                         </td>
                         <td><strong>{{ o.amount }}€</strong></td>
                         <td>

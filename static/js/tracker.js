@@ -3,7 +3,7 @@
 (function () {
     const API_BASE = '/api/track';
 
-    // 1. Session Management
+    // 1. Session & Source Management
     function getSessionId() {
         let sid = localStorage.getItem('site_session_id');
         if (!sid) {
@@ -12,6 +12,34 @@
         }
         return sid;
     }
+
+    function getTrafficSource() {
+        // 1. Check URL Params (Strongest signal)
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('fbclid')) return 'Facebook Ads';
+        if (params.has('gclid')) return 'Google Ads';
+        if (params.has('ttclid')) return 'TikTok Ads';
+        if (params.has('utm_source')) return params.get('utm_source');
+
+        // 2. Check Referrer
+        const ref = document.referrer;
+        if (ref) {
+            if (ref.includes('facebook.com')) return 'Facebook Organic';
+            if (ref.includes('instagram.com')) return 'Instagram Organic';
+            if (ref.includes('google.com')) return 'Google Organic';
+            if (ref.includes('tiktok.com')) return 'TikTok Organic';
+        }
+
+        // 3. Return stored source or Direct
+        return localStorage.getItem('traffic_source') || 'Direct';
+    }
+
+    // Capture and Store Source on first visit (or if new campaign params found)
+    const currentSource = getTrafficSource();
+    if (currentSource !== 'Direct' && currentSource !== localStorage.getItem('traffic_source')) {
+        localStorage.setItem('traffic_source', currentSource);
+    }
+    const finalSource = localStorage.getItem('traffic_source') || 'Direct';
 
     const sessionId = getSessionId();
     let startTime = Date.now();
@@ -25,7 +53,8 @@
             body: JSON.stringify({
                 session_id: sessionId,
                 path: path,
-                referrer: document.referrer
+                referrer: document.referrer,
+                traffic_source: finalSource
             })
         }).catch(err => console.error("Tracker Init Error:", err));
     }

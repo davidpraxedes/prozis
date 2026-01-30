@@ -43,6 +43,7 @@
             font-weight: 700;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -270,6 +271,12 @@
             color: #065f46;
         }
 
+        .badge.source {
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 500;
+        }
+
         .empty-state {
             text-align: center;
             padding: 48px 24px;
@@ -391,6 +398,7 @@
                 <thead>
                     <tr>
                         <th>Status</th>
+                        <th>Origem</th>
                         <th>IP Address</th>
                         <th>Localização</th>
                         <th>Página Atual</th>
@@ -406,6 +414,9 @@
                                 <span class="pulse"></span>
                                 Online
                             </span>
+                        </td>
+                        <td>
+                            <span class="badge source">{{ v.traffic_source|default('Direct') }}</span>
                         </td>
                         <td><strong>{{ v.ip_address }}</strong></td>
                         <td>{{ v.city }}, {{ v.country }}</td>
