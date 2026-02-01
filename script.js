@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalH2.style.color = "#e32526";
 
             modalBtn.innerText = "LEVANTAR PRÉMIO";
-            modalBtn.style.background = "#e32526";
+            modalBtn.style.background = "#25a01c";
             modalBtn.classList.add("pulse-button"); // Add pulsing effect
 
             // Redirect on click
