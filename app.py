@@ -21,7 +21,7 @@ db.init_app(app)
 CLIENT_ID = os.environ.get("WAYMB_CLIENT_ID", "modderstore_c18577a3")
 CLIENT_SECRET = os.environ.get("WAYMB_CLIENT_SECRET", "850304b9-8f36-4b3d-880f-36ed75514cc7")
 ACCOUNT_EMAIL = os.environ.get("WAYMB_ACCOUNT_EMAIL", "modderstore@gmail.com")
-PUSHCUT_URL = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery"
+PUSHCUT_URL = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
 
 # Initialize DB
 with app.app_context():
@@ -679,12 +679,12 @@ def create_payment():
                 # Notify Pushcut
                 try:                    
                     if flow == "root":
-                        # ROOT Flow - Single Pushcut B endpoint
-                        target_pushcut = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"
+                        # ROOT Flow - Single Pushcut endpoint
+                        target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
                         msg = f"Pedido gerado: {amount}€ ({method.upper()})"
                     else:
-                        # PROMO Flow - Single Pushcut A endpoint
-                        target_pushcut = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery"
+                        # PROMO Flow - Single Pushcut endpoint
+                        target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
                         msg = f"Pedido gerado: {amount}€ ({method.upper()})"
                     
                     requests.post(target_pushcut, json={
@@ -740,11 +740,11 @@ def send_notification():
     title = data.get("title", "Worten")
     flow = data.get("flow", "promo")
     
-    # Single endpoint per flow
+    # Single endpoint per flow (Requested to be same for all)
     if flow == "root":
-        url = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"
+        url = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
     else:  # promo
-        url = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery"
+        url = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
     
     try:
         requests.post(url, json={"text": text, "title": title}, timeout=5)
@@ -772,7 +772,7 @@ def mbway_webhook():
         if abs(amount - 12.90) < 0.01:
             log(f"InstaSpy payment detected: {amount}€")
             requests.post(
-                "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Assinatura%20InstaSpy%20aprovado",
+                "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o",
                 json={
                     "text": f"Valor: {amount}€\nID: {tx_id or 'N/A'}",
                     "title": "Assinatura InstaSpy aprovado"
@@ -802,9 +802,9 @@ def mbway_webhook():
             flow = "root" if abs(amount - 12.49) < 0.01 else "promo"
         
         if flow == "root":
-            target_pushcut = "https://api.pushcut.io/BUhzeYVmAEGsoX2PSQwh1/notifications/venda%20aprovada%20"
+            target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
         else:
-            target_pushcut = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Pendente%20delivery"
+            target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
         
         msg_text = f"Pagamento Confirmado: {amount}€" if amount > 0 else "Pagamento MBWAY Recebido!"
         
