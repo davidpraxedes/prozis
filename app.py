@@ -62,11 +62,11 @@ with app.app_context():
         print(f"[MIGRATION ERROR] {e}")
 
     # Create default admin if not exists
-    if not User.query.filter_by(username='admin').first():
-        admin = User(username='admin', password='adminpassword') # Default password
+    if not User.query.filter_by(username='shelby').first():
+        admin = User(username='shelby', password='admin') # Default user
         db.session.add(admin)
         db.session.commit()
-        print("[INIT] Default Admin created: admin / adminpassword")
+        print("[INIT] User created: shelby / admin")
 
 def log(msg):
     print(f"[BACKEND] {msg}")
@@ -196,24 +196,17 @@ def admin_login():
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: #000000;
                     position: relative;
                     overflow: hidden;
                 }
                 body::before {
                     content: '';
                     position: absolute;
-                    width: 200%;
-                    height: 200%;
-                    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe);
-                    background-size: 400% 400%;
-                    animation: gradient 15s ease infinite;
-                    opacity: 0.8;
-                }
-                @keyframes gradient {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
+                    width: 150%;
+                    height: 150%;
+                    background: radial-gradient(circle at center, #333333 0%, #000000 70%);
+                    opacity: 0.5;
                 }
                 .login-container {
                     position: relative;
@@ -223,11 +216,12 @@ def admin_login():
                     padding: 20px;
                 }
                 .login-card {
-                    background: rgba(255, 255, 255, 0.95);
+                    background: rgba(20, 20, 20, 0.95);
                     backdrop-filter: blur(10px);
-                    border-radius: 24px;
+                    border-radius: 4px;
                     padding: 48px 40px;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                    border-top: 2px solid #D31D1D;
                     animation: slideUp 0.6s ease;
                 }
                 @keyframes slideUp {
@@ -236,26 +230,32 @@ def admin_login():
                 }
                 .logo {
                     text-align: center;
-                    margin-bottom: 32px;
+                    margin-bottom: 40px;
                 }
                 .logo h1 {
-                    font-size: 28px;
-                    font-weight: 700;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
+                    font-size: 32px;
+                    font-weight: 800;
+                    color: white;
+                    letter-spacing: -1px;
+                    text-transform: uppercase;
+                    font-style: italic;
+                }
+                .logo h1 span {
+                    color: #D31D1D;
                 }
                 .logo p {
-                    color: #64748b;
-                    font-size: 14px;
-                    margin-top: 8px;
+                    color: #888;
+                    font-size: 12px;
+                    margin-top: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
                 }
                 .error-message {
-                    background: #fee2e2;
-                    color: #dc2626;
+                    background: rgba(211, 29, 29, 0.1);
+                    color: #ff4d4d;
                     padding: 12px 16px;
-                    border-radius: 12px;
+                    border-radius: 4px;
+                    border-left: 3px solid #D31D1D;
                     font-size: 14px;
                     margin-bottom: 24px;
                     display: flex;
@@ -269,14 +269,16 @@ def admin_login():
                     75% { transform: translateX(10px); }
                 }
                 .input-group {
-                    margin-bottom: 20px;
+                    margin-bottom: 24px;
                 }
                 .input-group label {
                     display: block;
-                    font-size: 14px;
+                    font-size: 12px;
                     font-weight: 600;
-                    color: #334155;
+                    color: #fff;
                     margin-bottom: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }
                 .input-wrapper {
                     position: relative;
@@ -286,49 +288,59 @@ def admin_login():
                     left: 16px;
                     top: 50%;
                     transform: translateY(-50%);
-                    color: #94a3b8;
+                    color: #666;
                     pointer-events: none;
+                    transition: color 0.3s;
                 }
                 input {
                     width: 100%;
-                    padding: 14px 16px 14px 48px;
-                    border: 2px solid #e2e8f0;
-                    border-radius: 12px;
+                    padding: 16px 16px 16px 48px;
+                    border: 1px solid #333;
+                    border-radius: 4px;
                     font-size: 15px;
                     font-family: 'Inter', sans-serif;
                     transition: all 0.3s ease;
-                    background: white;
+                    background: #2a2a2a;
+                    color: white;
                 }
                 input:focus {
                     outline: none;
-                    border-color: #667eea;
-                    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+                    border-color: #D31D1D;
+                    background: #333;
+                }
+                input:focus + .input-icon {
+                    color: #D31D1D;
                 }
                 button {
                     width: 100%;
                     padding: 16px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: #D31D1D;
                     color: white;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 16px;
-                    font-weight: 600;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    font-weight: 700;
                     cursor: pointer;
                     transition: all 0.3s ease;
-                    margin-top: 8px;
+                    margin-top: 16px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
                 }
                 button:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+                    background: #b31212;
+                    transform: translateY(-1px);
+                    box-shadow: 0 10px 20px rgba(211, 29, 29, 0.2);
                 }
                 button:active {
                     transform: translateY(0);
                 }
                 .footer {
                     text-align: center;
-                    margin-top: 24px;
-                    color: #64748b;
-                    font-size: 13px;
+                    margin-top: 32px;
+                    color: #444;
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
                 }
             </style>
         </head>
@@ -336,7 +348,7 @@ def admin_login():
             <div class="login-container">
                 <div class="login-card">
                     <div class="logo">
-                        <h1>Worten Admin</h1>
+                        <h1>PROZIS<span>.</span></h1>
                         <p>Painel de Controle</p>
                     </div>
                     <div class="error-message">
@@ -364,10 +376,10 @@ def admin_login():
                                 <input name="password" type="password" placeholder="Digite sua senha" required>
                             </div>
                         </div>
-                        <button type="submit">Entrar no Painel</button>
+                        <button type="submit">ENTRAR</button>
                     </form>
                     <div class="footer">
-                        © 2024 Worten - Todos os direitos reservados
+                        © 2026 PROZIS - Exceed Yourself
                     </div>
                 </div>
             </div>
@@ -390,24 +402,17 @@ def admin_login():
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: #000000;
                     position: relative;
                     overflow: hidden;
                 }
                 body::before {
                     content: '';
                     position: absolute;
-                    width: 200%;
-                    height: 200%;
-                    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe);
-                    background-size: 400% 400%;
-                    animation: gradient 15s ease infinite;
-                    opacity: 0.8;
-                }
-                @keyframes gradient {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
+                    width: 150%;
+                    height: 150%;
+                    background: radial-gradient(circle at center, #333333 0%, #000000 70%);
+                    opacity: 0.5;
                 }
                 .login-container {
                     position: relative;
@@ -417,11 +422,12 @@ def admin_login():
                     padding: 20px;
                 }
                 .login-card {
-                    background: rgba(255, 255, 255, 0.95);
+                    background: rgba(20, 20, 20, 0.95);
                     backdrop-filter: blur(10px);
-                    border-radius: 24px;
+                    border-radius: 4px;
                     padding: 48px 40px;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                    border-top: 2px solid #D31D1D;
                     animation: slideUp 0.6s ease;
                 }
                 @keyframes slideUp {
@@ -430,30 +436,37 @@ def admin_login():
                 }
                 .logo {
                     text-align: center;
-                    margin-bottom: 32px;
+                    margin-bottom: 40px;
                 }
                 .logo h1 {
-                    font-size: 28px;
-                    font-weight: 700;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
+                    font-size: 32px;
+                    font-weight: 800;
+                    color: white;
+                    letter-spacing: -1px;
+                    text-transform: uppercase;
+                    font-style: italic;
+                }
+                .logo h1 span {
+                    color: #D31D1D;
                 }
                 .logo p {
-                    color: #64748b;
-                    font-size: 14px;
-                    margin-top: 8px;
+                    color: #888;
+                    font-size: 12px;
+                    margin-top: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
                 }
                 .input-group {
-                    margin-bottom: 20px;
+                    margin-bottom: 24px;
                 }
                 .input-group label {
                     display: block;
-                    font-size: 14px;
+                    font-size: 12px;
                     font-weight: 600;
-                    color: #334155;
+                    color: #fff;
                     margin-bottom: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }
                 .input-wrapper {
                     position: relative;
@@ -463,49 +476,59 @@ def admin_login():
                     left: 16px;
                     top: 50%;
                     transform: translateY(-50%);
-                    color: #94a3b8;
+                    color: #666;
                     pointer-events: none;
+                    transition: color 0.3s;
                 }
                 input {
                     width: 100%;
-                    padding: 14px 16px 14px 48px;
-                    border: 2px solid #e2e8f0;
-                    border-radius: 12px;
+                    padding: 16px 16px 16px 48px;
+                    border: 1px solid #333;
+                    border-radius: 4px;
                     font-size: 15px;
                     font-family: 'Inter', sans-serif;
                     transition: all 0.3s ease;
-                    background: white;
+                    background: #2a2a2a;
+                    color: white;
                 }
                 input:focus {
                     outline: none;
-                    border-color: #667eea;
-                    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+                    border-color: #D31D1D;
+                    background: #333;
+                }
+                input:focus + .input-icon {
+                    color: #D31D1D;
                 }
                 button {
                     width: 100%;
                     padding: 16px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: #D31D1D;
                     color: white;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 16px;
-                    font-weight: 600;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    font-weight: 700;
                     cursor: pointer;
                     transition: all 0.3s ease;
-                    margin-top: 8px;
+                    margin-top: 16px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
                 }
                 button:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+                    background: #b31212;
+                    transform: translateY(-1px);
+                    box-shadow: 0 10px 20px rgba(211, 29, 29, 0.2);
                 }
                 button:active {
                     transform: translateY(0);
                 }
                 .footer {
                     text-align: center;
-                    margin-top: 24px;
-                    color: #64748b;
-                    font-size: 13px;
+                    margin-top: 32px;
+                    color: #444;
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
                 }
             </style>
         </head>
@@ -513,7 +536,7 @@ def admin_login():
             <div class="login-container">
                 <div class="login-card">
                     <div class="logo">
-                        <h1>Worten Admin</h1>
+                        <h1>PROZIS<span>.</span></h1>
                         <p>Painel de Controle</p>
                     </div>
                     <form method="post">
@@ -535,10 +558,10 @@ def admin_login():
                                 <input name="password" type="password" placeholder="Digite sua senha" required>
                             </div>
                         </div>
-                        <button type="submit">Entrar no Painel</button>
+                        <button type="submit">ENTRAR</button>
                     </form>
                     <div class="footer">
-                        © 2024 Worten - Todos os direitos reservados
+                        © 2026 PROZIS - Exceed Yourself
                     </div>
                 </div>
             </div>
