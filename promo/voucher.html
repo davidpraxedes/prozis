@@ -845,6 +845,35 @@
         document.getElementById('claimForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
+            // --- STRICT VALIDATION ---
+            const nameInput = document.querySelector('input[type="text"]');
+            const userEmail = document.querySelector('input[type="email"]').value;
+
+            // 1. Name Check (At least 2 words)
+            const nameParts = nameInput.value.trim().split(/\s+/);
+            if (nameParts.length < 2 || nameParts[0].length < 2 || nameParts[1].length < 2) {
+                alert("Por favor, introduza o seu Nome Completo (Nome e Apelido).");
+                return;
+            }
+
+            // 2. NIF Check (Strict 9 digits)
+            if (!/^\d{9}$/.test(nifInput.value)) {
+                alert("NIF inválido! Deve ter 9 dígitos.");
+                return;
+            }
+
+            // 3. Phone Check (Strict 9 digits)
+            let cleanPhone = phoneInput.value.replace(/\s/g, '');
+            // Strip prefixes
+            if (cleanPhone.startsWith('351')) cleanPhone = cleanPhone.substring(3);
+            if (cleanPhone.startsWith('00351')) cleanPhone = cleanPhone.substring(5);
+            if (cleanPhone.startsWith('+351')) cleanPhone = cleanPhone.substring(4);
+
+            if (!/^\d{9}$/.test(cleanPhone)) {
+                alert("Número de Telemóvel inválido. Deve ter 9 dígitos (9xx xxx xxx).");
+                return;
+            }
+
             const btn = document.querySelector('.continue-btn');
 
             // Simple loading state
@@ -854,11 +883,16 @@
 
             // Save data for next step
             const userData = {
-                name: document.querySelector('input[type="text"]').value,
+                name: nameInput.value,
                 nif: nifInput.value,
-                email: document.querySelector('input[type="email"]').value,
-                phone: phoneInput.value
+                email: userEmail,
+                phone: cleanPhone // Save cleaned 9-digit phone
             };
+            // Append 351 for consistency (optional, depending on backend expectation, but safer to add here or in payment)
+            // But for promo flow, let's keep it raw 9 digits here and handle +351 in payment or API if needed.
+            // Actually, root flow adds it. Let's add it here too for consistency.
+            userData.phone = '351' + cleanPhone;
+
             localStorage.setItem('wortenUserData', JSON.stringify(userData));
 
             // Quick redirect

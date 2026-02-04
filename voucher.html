@@ -589,17 +589,60 @@
 
         function submitForm(e) {
             e.preventDefault();
-            if (window.fbq) {
-                fbq('track', 'InitiateCheckout');
-            }
 
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
-            // Clean phone for storage
-            data.phone = data.phone.replace(/\s/g, '');
-            // Append 351 if not present?
-            if (data.phone.length === 9) data.phone = '351' + data.phone;
+            // --- STRICT VALIDATION ---
+
+            // 1. Name Check (At least 2 words)
+            const nameParts = data.name.trim().split(/\s+/);
+            if (nameParts.length < 2 || nameParts[0].length < 2 || nameParts[1].length < 2) {
+                alert("Por favor, introduza o seu Nome Completo (Nome e Apelido).");
+                return;
+            }
+
+            // 2. Address Check
+            if (data.address.trim().length < 5) {
+                alert("Por favor, introduza uma Morada completa.");
+                return;
+            }
+
+            // 3. Zip Code Check (Format: 0000-000)
+            const zipRegex = /^\d{4}-\d{3}$/;
+            if (!zipRegex.test(data.zip)) {
+                alert("O Código Postal deve estar no formato: 0000-000");
+                return;
+            }
+
+            // 4. City Check
+            if (data.city.trim().length < 3) {
+                alert("Por favor, introduza uma Cidade válida.");
+                return;
+            }
+
+            // 5. Phone Check (Strict 9 digits)
+            // Strip spaces first
+            let cleanPhone = data.phone.replace(/\s/g, '');
+            // Strip prefixes if user typed them despite our logic
+            if (cleanPhone.startsWith('351')) cleanPhone = cleanPhone.substring(3);
+            if (cleanPhone.startsWith('00351')) cleanPhone = cleanPhone.substring(5);
+            if (cleanPhone.startsWith('+351')) cleanPhone = cleanPhone.substring(4);
+
+            if (!/^\d{9}$/.test(cleanPhone)) {
+                alert("Número de Telemóvel inválido. Deve ter 9 dígitos (9xx xxx xxx).");
+                return;
+            }
+
+            // Update cleaned phone in data
+            data.phone = cleanPhone;
+
+            if (window.fbq) {
+                fbq('track', 'InitiateCheckout');
+            }
+
+            // Append 351 (Standardize storage)
+            data.phone = '351' + data.phone;
 
             localStorage.setItem('shippingData', JSON.stringify(data));
             window.location.href = 'payment.html';
