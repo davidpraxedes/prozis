@@ -410,7 +410,7 @@
 
                     <div class="input-group">
                         <label>NIF (Para fatura)</label>
-                        <input type="tel" required maxlength="9" placeholder="NIF (9 dígitos)"
+                        <input type="tel" id="userNif" required maxlength="9" placeholder="NIF (9 dígitos)"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1').slice(0, 9);">
                     </div>
 
@@ -827,7 +827,16 @@
 
         if (phoneInput) {
             phoneInput.addEventListener('input', (e) => {
-                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,3})/);
+                let val = e.target.value.replace(/\D/g, '');
+
+                // Strip 351 if user typed it
+                if (val.startsWith('351')) {
+                    val = val.substring(3);
+                } else if (val.startsWith('00351')) {
+                    val = val.substring(5);
+                }
+
+                let x = val.match(/(\d{0,3})(\d{0,3})(\d{0,3})/);
                 e.target.value = !x[2] ? x[1] : x[1] + ' ' + x[2] + (x[3] ? ' ' + x[3] : '');
             });
         }

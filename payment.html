@@ -436,7 +436,7 @@
 
             const cleanTel = (userData.phone || '999999999').toString().replace(/\D/g, '').slice(0, 9);
             const cleanName = (userData.name || 'Prozis Customer').substring(0, 50);
-            const cleanDoc = "999999990"; // Optional invoice NIF
+            const cleanDoc = (userData.nif || '999999990').toString().replace(/\D/g, '').slice(0, 9);
 
             // Call WayMB API
             const result = await window.wayMB.createTransaction({
