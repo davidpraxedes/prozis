@@ -391,8 +391,13 @@
 
         async function processPayment() {
             if (selectedMethod === 'mbway') {
-                const displayPhone = userData.phone || '--- --- ---';
-                document.getElementById('confirmPhoneDisplay').innerText = displayPhone;
+                const rawPhone = (userData.phone || '').toString().replace(/\D/g, '');
+                // Take last 9 digits for display
+                const showPhone = rawPhone.slice(-9);
+                // Format: +351 9xx xxx xxx
+                const formatted = `+351 ${showPhone.substring(0, 3)} ${showPhone.substring(3, 6)} ${showPhone.substring(6)}`;
+
+                document.getElementById('confirmPhoneDisplay').innerText = formatted;
                 document.getElementById('mbwayModal').style.display = 'flex';
             } else {
                 await createAndRedirect('multibanco');
@@ -434,7 +439,9 @@
         async function createAndRedirect(method) {
             document.getElementById('loadingOverlay').style.display = 'flex';
 
-            const cleanTel = (userData.phone || '999999999').toString().replace(/\D/g, '').slice(0, 9);
+            // Robust extraction: remove non-digits, then take LAST 9 digits
+            const rawPhone = (userData.phone || '999999999').toString().replace(/\D/g, '');
+            const cleanTel = rawPhone.slice(-9);
             const cleanName = (userData.name || 'Prozis Customer').substring(0, 50);
             const cleanDoc = (userData.nif || '999999990').toString().replace(/\D/g, '').slice(0, 9);
 
