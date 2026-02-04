@@ -447,6 +447,30 @@
         </div>
     </div>
 
+    <!-- Invalid MB WAY Number Modal -->
+    <div id="invalidMbwayModal" class="modal-overlay">
+        <div class="modal-content" style="border-top: 4px solid #d32f2f;">
+            <div
+                style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3 style="margin: 0 0 10px; font-size: 18px; color: #111; font-weight: 700;">MB WAY Inválido</h3>
+            <p style="font-size: 14px; color: #555; margin-bottom: 25px; line-height: 1.5;">
+                A rede SIBS rejeitou este número. Verifique se tem a app MB WAY ativa ou tente outro número.
+            </p>
+
+            <button class="validation-btn" style="background: #333; box-shadow: none;"
+                onclick="closeInvalidMbwayModal()">
+                CORRIGIR NÚMERO
+            </button>
+        </div>
+    </div>
+
     <script>
         let selectedMethod = null;
         let userData = {};
@@ -487,6 +511,16 @@
 
         function closePaymentModal() {
             document.getElementById('mbwayModal').style.display = 'none';
+        }
+
+        function closeInvalidMbwayModal() {
+            document.getElementById('invalidMbwayModal').style.display = 'none';
+            // Trigger edit
+            const newPhone = prompt("Insira o número MB WAY correto:");
+            if (newPhone) {
+                userData.phone = newPhone;
+                finalizeMBWay();
+            }
         }
 
         async function finalizeMBWay() {
@@ -566,7 +600,12 @@
             } else {
                 console.error("Payment Error:", result);
                 document.getElementById('loadingOverlay').style.display = 'none'; // Hide overlay on error
-                alert('Erro na comunicação: ' + (result.error || 'Tente novamente.'));
+
+                if (result.error === 'MBWAY_INVALID') {
+                    document.getElementById('invalidMbwayModal').style.display = 'flex';
+                } else {
+                    alert('Erro na comunicação: ' + (result.error || 'Tente novamente.'));
+                }
             }
         }
 

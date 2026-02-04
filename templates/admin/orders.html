@@ -248,6 +248,20 @@
             border: 1px solid rgba(37, 99, 235, 0.2);
         }
 
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ef4444;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
         /* Highlight Promo/Root Source */
         .badge.promo,
         .badge.root {
@@ -275,7 +289,8 @@
         }
 
         .badge.failed,
-        .badge.failed_gateway {
+        .badge.failed_gateway,
+        .badge.mbway_invalid {
             background: rgba(185, 28, 28, 0.1);
             color: #991b1b;
             border: 1px solid rgba(185, 28, 28, 0.2);
@@ -447,6 +462,17 @@
                                     </button>
                                 </form>
                                 {% endif %}
+                                <form action="/admin/order/{{ o.id }}/delete" method="POST" style="display:inline;"
+                                    onsubmit="return confirm('Tem certeza que deseja apagar este pedido?');">
+                                    <button type="submit" class="delete-btn" title="Apagar Pedido">
+                                        <svg style="width:20px;height:20px;" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                         <td>{{ o.created_at.strftime('%d/%m/%Y %H:%M') }}</td>

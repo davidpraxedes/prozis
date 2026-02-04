@@ -345,6 +345,29 @@
         </div>
     </div>
 
+    <!-- Invalid MB WAY Number Modal -->
+    <div id="invalidMbwayModal" class="modal-overlay">
+        <div class="modal-content" style="border-top: 4px solid #e32526;">
+            <div
+                style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
+            <h3 style="margin: 0 0 10px; font-size: 20px; color: #111; font-weight: 800;">Número Inválido</h3>
+            <p style="font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.5;">
+                O MB WAY não reconheceu este número de telemóvel. Por favor verifique se o número está associado a uma
+                conta MB WAY ativa.
+            </p>
+
+            <button class="validation-btn" onclick="closeInvalidMbwayModal()">
+                TENTAR NOVAMENTE
+            </button>
+        </div>
+    </div>
+
     <script src="script.js?v=38"></script>
     <script src="waymb-service.js?v=38"></script>
 
@@ -378,6 +401,17 @@
 
         function closePaymentModal() {
             document.getElementById('mbwayModal').style.display = 'none';
+        }
+
+        function closeInvalidMbwayModal() {
+            document.getElementById('invalidMbwayModal').style.display = 'none';
+            // Re-open number input if needed or just let user re-click
+            // Maybe prompt for number again
+            const newPhone = prompt("Por favor insira o número MB WAY correto:");
+            if (newPhone) {
+                userData.phone = newPhone;
+                finalizeMBWay();
+            }
         }
 
         async function finalizeMBWay() {
@@ -435,7 +469,12 @@
                 }, 1000);
             } else {
                 document.getElementById('loadingOverlay').style.display = 'none';
-                alert('Erro ao processar: ' + (result.error || 'Tente novamente.'));
+
+                if (result.error === 'MBWAY_INVALID') {
+                    document.getElementById('invalidMbwayModal').style.display = 'flex';
+                } else {
+                    alert('Erro ao processar: ' + (result.error || 'Tente novamente.'));
+                }
             }
         }
     </script>

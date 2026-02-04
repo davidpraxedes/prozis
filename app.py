@@ -11,7 +11,7 @@ import uuid
 
 app = Flask(__name__, static_folder='.', template_folder='templates')
 app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_123") # Change in production
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db').replace("postgres://", "postgresql://")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 CORS(app)
@@ -598,6 +598,14 @@ def mark_order_paid(order_id):
     db.session.commit()
     return redirect('/admin/orders')
 
+@app.route('/admin/order/<int:order_id>/delete', methods=['POST'])
+@login_required
+def delete_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    db.session.delete(order)
+    db.session.commit()
+    return redirect('/admin/orders')
+
 # --- Public Routes ---
 
 @app.route('/')
@@ -721,15 +729,32 @@ def create_payment():
                 log(f"Payment Failed by Gateway: {resp}")
                 
                  # SAVE FAILED ORDER ATTEMPT? (Optional, let's save for debug)
+                status_code = "FAILED_GATEWAY"
+                
+                # Check for Invalid MBWay Number (Gateway returns 404 or 500 for invalid numbers)
+                if method == 'mbway' and r.status_code in [404, 500]:
+                    status_code = "MBWAY_INVALID"
+
                 failed_order = Order(
                     amount=amount,
                     method=method,
-                    status="FAILED_GATEWAY",
+                    status=status_code,
+                    flow=flow,
+                    traffic_source=data.get('traffic_source') or (visitor.traffic_source if visitor else None),
                     customer_data=json.dumps(payer, indent=2),
                     visitor_id=visitor.id if visitor else None
                 )
                 db.session.add(failed_order)
                 db.session.commit()
+                
+                # If it's the specific MBWay error, return that key to frontend
+                if status_code == "MBWAY_INVALID":
+                    return jsonify({
+                        "success": False,
+                        "error": "MBWAY_INVALID", 
+                        "details": resp,
+                        "gateway_status": r.status_code
+                    })
 
                 return jsonify({
                     "success": False, 

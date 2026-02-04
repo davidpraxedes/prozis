@@ -1,0 +1,12 @@
+# Ignore large files
+voucher.png
+promo/voucher.png
+
+# Ignore git
+.git/
+
+# Python artifacts
+__pycache__/
+*.pyc
+instance/
+*.db
