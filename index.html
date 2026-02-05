@@ -5,11 +5,170 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="/static/js/tracker.js"></script>
-  <title>Roleta Prozis</title>
-  <meta name="description" content="Roleta premiada Prozis">
+  <title>Roleta Sephora</title>
+  <meta name="description" content="Roleta premiada Sephora">
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=38">
-  <link rel="icon" href="/assets/prozis-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css?v=39">
+  <link rel="icon" href="/assets/sephora-logo-black.png" type="image/png">
+  <style>
+    .mirror-effect {
+      -webkit-box-reflect: below -10px linear-gradient(to bottom, transparent, transparent 60%, rgba(255, 255, 255, 0.4));
+      /* Compatibility */
+      position: relative;
+    }
+
+    .modal-cta-btn {
+      padding: 18px 40px !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: white !important;
+      background: linear-gradient(135deg, #E50019 0%, #B30013 100%) !important;
+      border: none !important;
+      border-radius: 50px !important;
+      box-shadow: 0 10px 25px rgba(229, 0, 25, 0.4) !important;
+      cursor: pointer;
+      width: 100%;
+      margin: 0 auto;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-cta-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(229, 0, 25, 0.5) !important;
+    }
+
+    .modal-gif-styled {
+      width: 140px !important;
+      margin-bottom: 25px !important;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border: 4px solid #ffebf6;
+    }
+
+    .victory-modal-content {
+      background: #fff !important;
+      color: #333 !important;
+      border-top: none !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .modal-cta-btn-success {
+      padding: 18px 40px !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: white !important;
+      background: linear-gradient(135deg, #25a01c 0%, #1a7d12 100%) !important;
+      border: none !important;
+      border-radius: 50px !important;
+      box-shadow: 0 10px 25px rgba(37, 160, 28, 0.4) !important;
+      cursor: pointer;
+      width: 100%;
+      margin: 0 auto;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .modal-cta-btn-success:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(37, 160, 28, 0.5) !important;
+    }
+
+    /* Start of Custom Onboarding Button Styles */
+    .modal-cta-btn-custom {
+      position: relative;
+      padding: 18px 40px !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #ffeef9 !important;
+      /* Announcement Bar Pink Text */
+      background: #000000 !important;
+      /* Black Background */
+      border: 1px solid #333 !important;
+      /* Dark border */
+      border-radius: 50px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+      cursor: pointer;
+      width: 100%;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      /* For shine effect */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      /* Space between icon and text */
+      text-shadow: none !important;
+      animation: pulse-light 2s infinite;
+    }
+
+    .modal-cta-btn-custom:hover {
+      transform: scale(1.03);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+      border-color: #ffb3c1 !important;
+    }
+
+    /* Shine Effect */
+    .modal-cta-btn-custom::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+      transform: skewX(-20deg);
+      animation: shine 3s infinite linear;
+      /* Continuous shine passing through */
+    }
+
+    @keyframes pulse-light {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 238, 249, 0.7);
+      }
+
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 10px rgba(255, 238, 249, 0);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 238, 249, 0);
+      }
+    }
+
+    @keyframes shine {
+      0% {
+        left: -100%;
+      }
+
+      20% {
+        left: 200%;
+      }
+
+      /* Fast pass */
+      100% {
+        left: 200%;
+      }
+
+      /* Wait */
+    }
+
+    /* End of Custom Onboarding Button Styles */
+  </style>
 
   <!-- Meta Pixel Code -->
   <script>
@@ -37,40 +196,53 @@
   <!-- Dynamic Background -->
   <div class="dynamic-background" id="dynamicBg"></div>
 
+  <!-- Announcement Bar -->
+  <div class="announcement-bar">
+    Descobre a tua sorte no <strong>Sephora Beauty Festival!</strong> 💄💋
+  </div>
+
   <!-- Onboarding Modal -->
   <div id="onboardingModal" class="result-modal" style="display: flex; z-index: 3000;">
     <div class="modal-content pulse-modal" style="max-width: 450px;">
-      <div style="font-size: 50px; margin-bottom: 20px;">🎰</div>
-      <h2 style="color: #d32f2f; margin-bottom: 10px; font-size: 28px; text-transform: uppercase; font-weight: 800;">
-        ACESSO LIBERADO!</h2>
-      <p style="font-size: 16px; color: #555; margin-bottom: 20px; line-height: 1.5;">
-        Foste selecionado para participar no nosso <strong>Festival de Prémios Exclusivo</strong>.<br><br>
-        Recebeste <strong style="color: #d32f2f; font-size: 20px;">3 TENTATIVAS GRÁTIS</strong> para ganhares o teu
-        prémio Prozis!
+      <img
+        src="https://images.squarespace-cdn.com/content/v1/5fd9d777fef50d2aa883a2bd/1611062458318-BINJ8YN8IU99VRWN5QLT/sephora_index_1.gif"
+        class="modal-gif-styled">
+      <h2
+        style="color: #000; margin-bottom: 10px; font-size: 28px; text-transform: uppercase; font-weight: 800; letter-spacing: -0.5px;">
+        ACESSO VIP</h2>
+      <p style="font-size: 16px; color: #333; margin-bottom: 25px; line-height: 1.6;">
+        Foste selecionado para o exclusivo<br><strong>Sephora Beauty Festival</strong>.<br><br>
+        Tens <strong style="color: #000; font-size: 18px; border-bottom: 2px solid #ffebf6;">3 TENTATIVAS
+          GRÁTIS</strong> para ganhar prémios de luxo!
       </p>
-      <button onclick="closeOnboarding()" class="spin-button"
-        style="padding: 15px 30px; font-size: 17px; display: block; margin: 0 auto; width: 90%; font-weight: 800; border-radius: 50px;">
+      <button onclick="closeOnboarding()" class="modal-cta-btn-custom">
+        <!-- SVG Gift Box Icon (User Provided) -->
+        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path fill="#ffeef9"
+            d="M385.5 132.8C393.1 119.9 406.9 112 421.8 112L424 112C446.1 112 464 129.9 464 152C464 174.1 446.1 192 424 192L350.7 192L385.5 132.8zM254.5 132.8L289.3 192L216 192C193.9 192 176 174.1 176 152C176 129.9 193.9 112 216 112L218.2 112C233.1 112 247 119.9 254.5 132.8zM344.1 108.5L320 149.5L295.9 108.5C279.7 80.9 250.1 64 218.2 64L216 64C167.4 64 128 103.4 128 152C128 166.4 131.5 180 137.6 192L96 192C78.3 192 64 206.3 64 224L64 256C64 273.7 78.3 288 96 288L544 288C561.7 288 576 273.7 576 256L576 224C576 206.3 561.7 192 544 192L502.4 192C508.5 180 512 166.4 512 152C512 103.4 472.6 64 424 64L421.8 64C389.9 64 360.3 80.9 344.1 108.4zM544 336L344 336L344 544L480 544C515.3 544 544 515.3 544 480L544 336zM296 336L96 336L96 480C96 515.3 124.7 544 160 544L296 544L296 336z" />
+        </svg>
         TENTAR A MINHA SORTE
       </button>
-      <p style="font-size: 11px; color: #999; margin-top: 15px; font-weight: 600;">Boa sorte! Promoção válida hoje. 🍀
+      <p style="font-size: 12px; color: #999; margin-top: 20px; font-weight: 500;">
+        Oferta limitada ao stock existente.
       </p>
     </div>
   </div>
 
   <div id="prozis-header"
     style="position: relative; width: 100%; padding: 20px 20px 10px; box-sizing: border-box; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-    <img id="prozis-logo" src="/assets/prozis-logo.svg"
-      style="width: 160px; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+    <img id="prozis-logo" src="/assets/sephora-logo-white.png"
+      style="width: 220px; margin-bottom: 15px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
 
-    <h1
+    <h1 class="mirror-effect"
       style="color: white; font-family: 'Exo 2', 'Arial', sans-serif; font-weight: 800; font-size: 32px; margin: 0; line-height: 1.2;">
       Roleta Premiada</h1>
-    <h2
-      style="color: #d32f2f; font-family: 'Exo 2', 'Arial', sans-serif; font-weight: 800; font-size: 36px; margin: 0; line-height: 1.2; text-shadow: 0px 2px 4px rgba(0,0,0,0.8);">
+    <h2 class="mirror-effect"
+      style="color: #ffebf6; font-family: 'Exo 2', 'Arial', sans-serif; font-weight: 800; font-size: 36px; margin: 0; line-height: 1.2; text-shadow: 0 0 20px rgba(255, 235, 246, 0.4);">
       Roda e Ganha!</h2>
     <p
       style="color: white; font-family: 'Arial', sans-serif; font-size: 16px; line-height: 1.5; max-width: 500px; margin: 10px auto 30px auto; opacity: 0.9;">
-      Estamos a celebrar o <strong>Festival de Prémios Prozis</strong>! Como cliente selecionado, tens acesso exclusivo
+      Estamos a celebrar o <strong>Sephora Beauty Festival</strong>! Como cliente selecionado, tens acesso exclusivo
       e direito a
       <strong>3 rodadas grátis</strong> para ganhar prémios de topo!
     </p>
@@ -84,9 +256,10 @@
           <!-- NOTE: The script logic determines the outcome, but we need visuals here. -->
 
           <!-- 1. KIT COMPLETO (White - Win) -->
-          <div class="segment win-segment" style="--i:1;">
-            <div class="segment-content"><span>KIT<br>COMPLETO</span><img class="prize-img"
-                src="/assets/prozispremio.png" alt="Kit Prozis"></div>
+          <div class="segment win-segment" id="kit-perfumes-segment" style="--i:1;">
+            <div class="segment-content"><span style="font-size: 8px;">KIT 3<br>PERFUMES</span><img class="prize-img"
+                src="/perfumes.png" alt="Kit 3 Perfumes"
+                style="opacity:1; width: 35px; height: 35px; object-fit: contain;"></div>
           </div>
           <!-- 2. TENTE NOVAMENTE (Black - Loss) -->
           <div class="segment" style="--i:2;">
@@ -96,10 +269,11 @@
                 style="font-size: 10px; font-weight: 800; line-height: 1.1; display: block; color: #fff;">TENTE<br>NOVAMENTE</span>
             </div>
           </div>
-          <!-- 3. FRITADEIRA (White - Dummy Win) -->
+          <!-- 3. Gift Card 100€ -->
           <div class="segment win-segment" style="--i:3;">
-            <div class="segment-content"><span>FRITADEIRA<br>DIGITAL</span><img class="prize-img"
-                src="/assets/fritadeira.png" alt="Fritadeira"></div>
+            <div class="segment-content"><span style="font-size: 14px; line-height: 1.1;">GIFT CARD<br>100€</span><img
+                class="prize-img" src="gift-card-100.png" alt="Gift Card 100€"
+                style="opacity:1; width: 75px; height: 75px; object-fit: contain;"></div>
           </div>
           <!-- 4. TENTE NOVAMENTE (Black - Loss) -->
           <div class="segment" style="--i:4;">
@@ -110,25 +284,14 @@
             </div>
           </div>
           <!-- 5. WHEY (White - Dummy Win) -->
+          <!-- 5. Kit D&G Light Blue -->
           <div class="segment win-segment" style="--i:5;">
-            <div class="segment-content"><span>WHEY +<br>CREATINA</span><img class="prize-img"
-                src="/assets/wheycreatina.png" alt="Whey"></div>
+            <div class="segment-content"><span style="font-size: 14px; line-height: 1.1;">Kit D&G<br>Light
+                Blue</span><img class="prize-img" src="kit-light-blue.png" alt="Kit D&G Light Blue"
+                style="opacity:1; width: 60px; height: 60px; object-fit: contain;"></div>
           </div>
           <!-- 6. TENTE NOVAMENTE (Black - Loss) -->
           <div class="segment" style="--i:6;">
-            <div class="segment-content">
-              <span style="font-size: 26px; display: block; margin-bottom: 2px;">😢</span>
-              <span
-                style="font-size: 10px; font-weight: 800; line-height: 1.1; display: block; color: #fff;">TENTE<br>NOVAMENTE</span>
-            </div>
-          </div>
-          <!-- 7. BCAA (White - Dummy Win) -->
-          <div class="segment win-segment" style="--i:7;">
-            <div class="segment-content"><span>BCAA<br>8:1:1</span><img class="prize-img" src="/assets/bcaa.png"
-                alt="BCAA"></div>
-          </div>
-          <!-- 8. TENTE NOVAMENTE (Black - Loss) -->
-          <div class="segment" style="--i:8;">
             <div class="segment-content">
               <span style="font-size: 26px; display: block; margin-bottom: 2px;">😢</span>
               <span
@@ -163,8 +326,8 @@
 
     <button id="spinBtn" class="spin-button">RODA AGORA!</button>
     <div id="spinsCounter"
-      style="margin-top: 15px; color: white; font-family: 'Exo 2', sans-serif; font-weight: 600; font-size: 18px; text-transform: uppercase; background: rgba(0,0,0,0.5); padding: 8px 20px; border-radius: 20px; letter-spacing: 1px;">
-      Giros Restantes: <span id="spinsLeftCount" style="color: #d32f2f; font-size: 22px;">3</span>
+      style="margin-top: 15px; color: white; font-family: 'Exo 2', sans-serif; font-weight: 600; font-size: 18px; text-transform: uppercase; background: rgba(255, 255, 255, 0.1); padding: 8px 25px; border-radius: 5px; letter-spacing: 1px; border: 1px solid rgba(255, 255, 255, 0.2);">
+      Giros Restantes: <span id="spinsLeftCount" style="color: #ffebf6; font-size: 22px; font-weight: 800;">3</span>
     </div>
     <!-- Social Proof Section -->
     <div class="social-proof-section">
@@ -177,22 +340,38 @@
 
   <!-- Result Modal -->
   <div id="resultModal" class="result-modal hidden">
-    <div class="modal-content"
-      style="background: white; padding: 40px; border-radius: 20px; text-align: center; max-width: 90%; width: 400px; box-shadow: 0 10px 50px rgba(0,0,0,0.5);">
-      <h2 style="color: #d32f2f; margin-bottom: 20px;">RESULTADO</h2>
-      <p id="resultText" style="font-size: 18px; color: #333; margin-bottom: 30px; line-height: 1.6;">
-        A tua sorte está a rolar...
-      </p><button onclick="window.closeModal()"
-        style="padding: 10px 20px; background: #d32f2f; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">LEVANTAR
-        PRÉMIO</button>
+    <div class="modal-content victory-modal-content"
+      style="padding: 40px; border-radius: 8px; text-align: center; max-width: 90%; width: 400px; background-color: rgb(255, 255, 255); color: rgb(51, 51, 51); box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 30px;">
+
+      <!-- Victory GIF -->
+      <img id="resultImage"
+        src="https://community.sephora.com/t5/image/serverpage/image-id/2646759i697E53C2574DD391?v=v2"
+        style="width: 150px; border-radius: 10px; margin-bottom: 20px; box-shadow: none;">
+
+      <h2
+        style="color: rgb(0, 0, 0); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-family: &quot;Exo 2&quot;, sans-serif; font-size: 28px;">
+        PARABÉNS!</h2>
+
+      <p id="resultText" style="font-size: 16px; color: rgb(68, 68, 68); margin-bottom: 30px; line-height: 1.6;">SORTE
+        GRANDE! CONSEGUISTE! Ganhaste um KIT SEPHORA no Sephora Beauty Festival!</p>
+
+      <button onclick="window.closeModal()" class="modal-cta-btn-success"
+        style="background-color: rgb(40, 167, 69); color: rgb(255, 255, 255); border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+        <!-- Gift Box SVG -->
+        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path fill="#ffffff"
+            d="M385.5 132.8C393.1 119.9 406.9 112 421.8 112L424 112C446.1 112 464 129.9 464 152C464 174.1 446.1 192 424 192L350.7 192L385.5 132.8zM254.5 132.8L289.3 192L216 192C193.9 192 176 174.1 176 152C176 129.9 193.9 112 216 112L218.2 112C233.1 112 247 119.9 254.5 132.8zM344.1 108.5L320 149.5L295.9 108.5C279.7 80.9 250.1 64 218.2 64L216 64C167.4 64 128 103.4 128 152C128 166.4 131.5 180 137.6 192L96 192C78.3 192 64 206.3 64 224L64 256C64 273.7 78.3 288 96 288L544 288C561.7 288 576 273.7 576 256L576 224C576 206.3 561.7 192 544 192L502.4 192C508.5 180 512 166.4 512 152C512 103.4 472.6 64 424 64L421.8 64C389.9 64 360.3 80.9 344.1 108.4zM544 336L344 336L344 544L480 544C515.3 544 544 515.3 544 480L544 336zM296 336L96 336L96 480C96 515.3 124.7 544 160 544L296 544L296 336z" />
+        </svg>
+        LEVANTAR PRÉMIO
+      </button>
     </div>
   </div>
 
   <!-- Official Footer -->
   <footer class="prozis-footer"
-    style="width: 100%; background: #111; padding: 40px 20px; text-align: center; margin-top: auto;">
-    <img src="/assets/prozis-logo.svg" class="footer-logo" alt="Prozis"
-      style="filter: brightness(0) invert(1); width: 120px; margin-bottom: 20px;">
+    style="width: 100%; background: #000; padding: 40px 20px; text-align: center; margin-top: auto;">
+    <img src="/assets/sephora-logo-white.png" class="footer-logo" alt="Sephora"
+      style="width: 120px; margin-bottom: 20px;">
     <div class="footer-links"
       style="display: flex; justify-content: center; gap: 20px; font-size: 12px; color: #666; margin-bottom: 20px;">
       <a onclick="openLegal('privacy')" style="cursor: pointer; text-decoration: none; color: #888;">Política de
@@ -200,14 +379,14 @@
       <a onclick="openLegal('terms')" style="cursor: pointer; text-decoration: none; color: #888;">Termos e
         Condições</a>
     </div>
-    <p style="font-size: 11px; color: #444;">© 2024 Prozis - Todos os direitos reservados.</p>
+    <p style="font-size: 11px; color: #444;">© 2026 Sephora - Todos os direitos reservados.</p>
   </footer>
 
   <!-- Legal Modals -->
   <div id="legalModal" class="legal-modal">
     <div class="legal-content">
       <span class="close-legal" onclick="closeLegal()">&times;</span>
-      <h2 id="legalTitle" style="color: #d32f2f; margin-bottom: 20px;"></h2>
+      <h2 id="legalTitle" style="color: #000; margin-bottom: 20px;"></h2>
       <div id="legalBody" style="font-size: 13px; color: #555;"></div>
     </div>
   </div>

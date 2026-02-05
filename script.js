@@ -147,14 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuration ---
     const segments = [
-        { id: 1, label: "KIT PROZIS", type: "win" },          // Index 0 (White)
+        { id: 1, label: "KIT 3 PERFUMES", type: "win" },          // Index 0 (White)
         { id: 2, label: "TENTE NOVAMENTE", type: "loss" },    // Index 1 (Black)
-        { id: 3, label: "FRITADEIRA", type: "win" },          // Index 2 (White)
+        { id: 3, label: "GIFT CARD 100€", type: "win" },          // Index 2 (White)
         { id: 4, label: "TENTE NOVAMENTE", type: "loss" },    // Index 3 (Black)
-        { id: 5, label: "WHEY + CREATINA", type: "win" },     // Index 4 (White)
-        { id: 6, label: "TENTE NOVAMENTE", type: "loss" },    // Index 5 (Black)
-        { id: 7, label: "BCAA 8:1:1", type: "win" },          // Index 6 (White)
-        { id: 8, label: "TENTE NOVAMENTE", type: "loss" }     // Index 7 (Black)
+        { id: 5, label: "KIT D&G LIGHT BLUE", type: "win" },     // Index 4 (White)
+        { id: 6, label: "TENTE NOVAMENTE", type: "loss" }     // Index 5 (Black)
     ];
 
     // ... (lines 140-234 skipped)
@@ -180,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let winningGlobalIndex;
         if (spinsLeft === 3) winningGlobalIndex = 1;      // First Loss (Tente Novamente - Index 1)
-        else if (spinsLeft === 2) winningGlobalIndex = 5; // Second Loss (Tente Novamente - Index 5)
-        else winningGlobalIndex = 0;                      // Final Win (Kit Prozis - Index 0)
+        else if (spinsLeft === 2) winningGlobalIndex = 3; // Second Loss (Tente Novamente - Index 3)
+        else winningGlobalIndex = 0;                      // Final Win (Kit Sephora - Index 0)
 
         // Decrement counter
         spinsLeft--;
@@ -192,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const winningSegment = segments[winningGlobalIndex];
 
         // Rotation Math
-        const centerAngle = winningGlobalIndex * 45 + 22.5;
+        const centerAngle = winningGlobalIndex * 60 + 30;
         let targetRotation = 360 - centerAngle;
         const jitter = Math.floor(Math.random() * 20) - 10; // +/- 10deg
         targetRotation += jitter;
@@ -206,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Ticking Sound Logic
         let lastAngle = currentRotation;
-        const step = 45;
+        const step = 60;
         function trackTicks() {
             if (!isSpinning) return;
             const style = window.getComputedStyle(wheel);
@@ -277,13 +275,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 zIndex: 9999
             });
 
-            resultText.innerHTML = `PARABÉNS!<br>GANHASTE: <strong>${segment.label}</strong>`;
-            modalH2.innerText = "VITÓRIA ÉPICA!";
-            modalH2.style.color = "#e32526";
+            // Ensure segment.label is valid, otherwise fallback
+            const prizeName = segment.label || "KIT DE MAQUIAGEM";
+
+            resultText.innerHTML = `SORTE GRANDE! CONSEGUISTE! Ganhaste um <strong style="color: #000; font-size: 18px; text-transform: uppercase;">${prizeName}</strong> no Sephora Beauty Festival!`;
+            // Title is static "PARABÉNS!" in HTML now, or we can ensure it here but without styling overrides
+            modalH2.innerText = "PARABÉNS!";
 
             modalBtn.innerText = "LEVANTAR PRÉMIO";
-            modalBtn.style.background = "#25a01c";
-            modalBtn.classList.add("pulse-button"); // Add pulsing effect
+            modalBtn.className = "modal-cta-btn-success pulse-button";
 
             // Redirect on click
             modalBtn.onclick = () => {
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Carla F.", "Tiago A.", "Luísa M.", "Gonçalo B.", "Beatriz D.",
         "André S.", "Inês C.", "Bruno V.", "Mariana T.", "Diogo R."
     ];
-    const prizes = ["KIT COMPLETO PROZIS", "FRITADEIRA DIGITAL", "KIT COMPLETO PROZIS", "WHEY + CREATINA", "BCAA 8:1:1"];
+    const prizes = ["KIT 3 PERFUMES", "GIFT CARD 50€", "KIT MAQUILHAGEM", "GLOW RECIPE SET", "HUDA BEAUTY PALETTE"];
     const winnersList = document.getElementById('winnersList');
 
     // Track recent names to avoid duplicates on screen
@@ -388,7 +388,7 @@ window.openLegal = (type) => {
     if (type === 'privacy') {
         title.innerText = "Política de Privacidade";
         body.innerHTML = `
-            <p><strong>1. Responsável pelo Tratamento:</strong> A Worten - Equipamentos para o Lar, S.A. é a responsável pelo tratamento dos seus dados pessoais.</p>
+            <p><strong>1. Responsável pelo Tratamento:</strong> A Sephora Portugal é a responsável pelo tratamento dos seus dados pessoais.</p>
             <p><strong>2. Finalidade:</strong> Os dados recolhidos nesta campanha destinam-se exclusivamente à validação da titularidade para atribuição de prémios e prevenção de fraude.</p>
             <p><strong>3. Partilha:</strong> Os seus dados não serão partilhados com terceiros para fins de marketing, exceto parceiros estritamente necessários para a entrega do prémio.</p>
             <p><strong>4. Segurança:</strong> Utilizamos protocolos SSL/TLS para garantir a segurança da transmissão de dados.</p>

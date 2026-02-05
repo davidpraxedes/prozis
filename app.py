@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory, render_template_
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Visitor, PageMetric, Order
+from sqlalchemy import func
 import requests
 import os
 import json
@@ -21,7 +22,7 @@ db.init_app(app)
 CLIENT_ID = os.environ.get("WAYMB_CLIENT_ID", "modderstore_c18577a3")
 CLIENT_SECRET = os.environ.get("WAYMB_CLIENT_SECRET", "850304b9-8f36-4b3d-880f-36ed75514cc7")
 ACCOUNT_EMAIL = os.environ.get("WAYMB_ACCOUNT_EMAIL", "modderstore@gmail.com")
-PUSHCUT_URL = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
+PUSHCUT_URL = "https://api.pushcut.io/XPTr5Kloj05Rr37Saz0D1/notifications/Aprovado%20delivery"
 
 # Initialize DB
 with app.app_context():
@@ -166,445 +167,203 @@ def track_heartbeat(): # Supports Beacon (text/plain) or JSON
 def login_required(f):
     def wrapper(*args, **kwargs):
         if not session.get('logged_in'):
+            if request.path.startswith('/api/'):
+                return jsonify({"error": "Unauthorized"}), 401
             return redirect('/admin/login')
         return f(*args, **kwargs)
     wrapper.__name__ = f.__name__
     return wrapper
 
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = User.query.filter_by(username=username, password=password).first()
-        if user:
-            session['logged_in'] = True
-            return redirect('/admin/dashboard')
-        return render_template_string("""
-        <!DOCTYPE html>
-        <html lang="pt-PT">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Admin Login - Worten</title>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    font-family: 'Inter', sans-serif;
-                    min-height: 100vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #000000;
-                    position: relative;
-                    overflow: hidden;
-                }
-                body::before {
-                    content: '';
-                    position: absolute;
-                    width: 150%;
-                    height: 150%;
-                    background: radial-gradient(circle at center, #333333 0%, #000000 70%);
-                    opacity: 0.5;
-                }
-                .login-container {
-                    position: relative;
-                    z-index: 1;
-                    width: 100%;
-                    max-width: 420px;
-                    padding: 20px;
-                }
-                .login-card {
-                    background: rgba(20, 20, 20, 0.95);
-                    backdrop-filter: blur(10px);
-                    border-radius: 4px;
-                    padding: 48px 40px;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-                    border-top: 2px solid #D31D1D;
-                    animation: slideUp 0.6s ease;
-                }
-                @keyframes slideUp {
-                    from { opacity: 0; transform: translateY(30px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .logo {
-                    text-align: center;
-                    margin-bottom: 40px;
-                }
-                .logo h1 {
-                    font-size: 32px;
-                    font-weight: 800;
-                    color: white;
-                    letter-spacing: -1px;
-                    text-transform: uppercase;
-                    font-style: italic;
-                }
-                .logo h1 span {
-                    color: #D31D1D;
-                }
-                .logo p {
-                    color: #888;
-                    font-size: 12px;
-                    margin-top: 4px;
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
-                }
-                .error-message {
-                    background: rgba(211, 29, 29, 0.1);
-                    color: #ff4d4d;
-                    padding: 12px 16px;
-                    border-radius: 4px;
-                    border-left: 3px solid #D31D1D;
-                    font-size: 14px;
-                    margin-bottom: 24px;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    animation: shake 0.5s;
-                }
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    25% { transform: translateX(-10px); }
-                    75% { transform: translateX(10px); }
-                }
-                .input-group {
-                    margin-bottom: 24px;
-                }
-                .input-group label {
-                    display: block;
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: #fff;
-                    margin-bottom: 8px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                .input-wrapper {
-                    position: relative;
-                }
-                .input-icon {
-                    position: absolute;
-                    left: 16px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    color: #666;
-                    pointer-events: none;
-                    transition: color 0.3s;
-                }
-                input {
-                    width: 100%;
-                    padding: 16px 16px 16px 48px;
-                    border: 1px solid #333;
-                    border-radius: 4px;
-                    font-size: 15px;
-                    font-family: 'Inter', sans-serif;
-                    transition: all 0.3s ease;
-                    background: #2a2a2a;
-                    color: white;
-                }
-                input:focus {
-                    outline: none;
-                    border-color: #D31D1D;
-                    background: #333;
-                }
-                input:focus + .input-icon {
-                    color: #D31D1D;
-                }
-                button {
-                    width: 100%;
-                    padding: 16px;
-                    background: #D31D1D;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    font-size: 14px;
-                    font-weight: 700;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    margin-top: 16px;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-                button:hover {
-                    background: #b31212;
-                    transform: translateY(-1px);
-                    box-shadow: 0 10px 20px rgba(211, 29, 29, 0.2);
-                }
-                button:active {
-                    transform: translateY(0);
-                }
-                .footer {
-                    text-align: center;
-                    margin-top: 32px;
-                    color: #444;
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="login-container">
-                <div class="login-card">
-                    <div class="logo">
-                        <h1>PROZIS<span>.</span></h1>
-                        <p>Painel de Controle</p>
-                    </div>
-                    <div class="error-message">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Login falhou. Verifique suas credenciais.
-                    </div>
-                    <form method="post">
-                        <div class="input-group">
-                            <label>Usuário</label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                <input name="username" type="text" placeholder="Digite seu usuário" required autofocus>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Senha</label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                <input name="password" type="password" placeholder="Digite sua senha" required>
-                            </div>
-                        </div>
-                        <button type="submit">ENTRAR</button>
-                    </form>
-                    <div class="footer">
-                        © 2026 PROZIS - Exceed Yourself
-                    </div>
-                </div>
-            </div>
-        </body>
-        </html>
-        """)
-    return render_template_string("""
-        <!DOCTYPE html>
-        <html lang="pt-PT">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Admin Login - Worten</title>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    font-family: 'Inter', sans-serif;
-                    min-height: 100vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #000000;
-                    position: relative;
-                    overflow: hidden;
-                }
-                body::before {
-                    content: '';
-                    position: absolute;
-                    width: 150%;
-                    height: 150%;
-                    background: radial-gradient(circle at center, #333333 0%, #000000 70%);
-                    opacity: 0.5;
-                }
-                .login-container {
-                    position: relative;
-                    z-index: 1;
-                    width: 100%;
-                    max-width: 420px;
-                    padding: 20px;
-                }
-                .login-card {
-                    background: rgba(20, 20, 20, 0.95);
-                    backdrop-filter: blur(10px);
-                    border-radius: 4px;
-                    padding: 48px 40px;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-                    border-top: 2px solid #D31D1D;
-                    animation: slideUp 0.6s ease;
-                }
-                @keyframes slideUp {
-                    from { opacity: 0; transform: translateY(30px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .logo {
-                    text-align: center;
-                    margin-bottom: 40px;
-                }
-                .logo h1 {
-                    font-size: 32px;
-                    font-weight: 800;
-                    color: white;
-                    letter-spacing: -1px;
-                    text-transform: uppercase;
-                    font-style: italic;
-                }
-                .logo h1 span {
-                    color: #D31D1D;
-                }
-                .logo p {
-                    color: #888;
-                    font-size: 12px;
-                    margin-top: 4px;
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
-                }
-                .input-group {
-                    margin-bottom: 24px;
-                }
-                .input-group label {
-                    display: block;
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: #fff;
-                    margin-bottom: 8px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-                .input-wrapper {
-                    position: relative;
-                }
-                .input-icon {
-                    position: absolute;
-                    left: 16px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    color: #666;
-                    pointer-events: none;
-                    transition: color 0.3s;
-                }
-                input {
-                    width: 100%;
-                    padding: 16px 16px 16px 48px;
-                    border: 1px solid #333;
-                    border-radius: 4px;
-                    font-size: 15px;
-                    font-family: 'Inter', sans-serif;
-                    transition: all 0.3s ease;
-                    background: #2a2a2a;
-                    color: white;
-                }
-                input:focus {
-                    outline: none;
-                    border-color: #D31D1D;
-                    background: #333;
-                }
-                input:focus + .input-icon {
-                    color: #D31D1D;
-                }
-                button {
-                    width: 100%;
-                    padding: 16px;
-                    background: #D31D1D;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    font-size: 14px;
-                    font-weight: 700;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    margin-top: 16px;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-                button:hover {
-                    background: #b31212;
-                    transform: translateY(-1px);
-                    box-shadow: 0 10px 20px rgba(211, 29, 29, 0.2);
-                }
-                button:active {
-                    transform: translateY(0);
-                }
-                .footer {
-                    text-align: center;
-                    margin-top: 32px;
-                    color: #444;
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="login-container">
-                <div class="login-card">
-                    <div class="logo">
-                        <h1>PROZIS<span>.</span></h1>
-                        <p>Painel de Controle</p>
-                    </div>
-                    <form method="post">
-                        <div class="input-group">
-                            <label>Usuário</label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                <input name="username" type="text" placeholder="Digite seu usuário" required autofocus>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Senha</label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                <input name="password" type="password" placeholder="Digite sua senha" required>
-                            </div>
-                        </div>
-                        <button type="submit">ENTRAR</button>
-                    </form>
-                    <div class="footer">
-                        © 2026 PROZIS - Exceed Yourself
-                    </div>
-                </div>
-            </div>
-        </body>
-        </html>
-    """)
-
-@app.route('/admin/dashboard')
+@app.route('/admin')
 @login_required
 def admin_dashboard():
-    # Active visitors in last 5 minutes
-    limit_time = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
-    active_visitors = Visitor.query.filter(Visitor.last_seen >= limit_time).order_by(Visitor.last_seen.desc()).all()
-    
-    return render_template('admin/dashboard.html', visitors=active_visitors)
+    return render_template('admin_index.html')
 
-@app.route('/admin/orders')
-@login_required
-def admin_orders():
-    orders = Order.query.order_by(Order.created_at.desc()).all()
-    return render_template('admin/orders.html', orders=orders)
-
+@app.route('/admin/login')
+def admin_login_view():
+    if session.get('logged_in'):
+        return redirect('/admin')
+    return render_template('admin_login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     return redirect('/admin/login')
 
-@app.route('/admin/order/<int:order_id>/mark-paid', methods=['POST'])
-@login_required
-def mark_order_paid(order_id):
-    order = Order.query.get_or_404(order_id)
-    order.status = "PAID"
-    db.session.commit()
-    return redirect('/admin/orders')
+# --- API Endpoints (Admin Kit) ---
 
-@app.route('/admin/order/<int:order_id>/delete', methods=['POST'])
+@app.route('/api/auth/login', methods=['POST'])
+def api_auth_login():
+    data = request.json or {}
+    username = data.get('username')
+    password = data.get('password')
+    
+    # Simple check against User table
+    user = User.query.filter_by(username=username, password=password).first()
+    if user:
+        session['logged_in'] = True
+        return jsonify({"success": True})
+    
+    return jsonify({"success": False, "error": "Invalid credentials"}), 401
+
+@app.route('/api/auth/logout', methods=['POST'])
+def api_auth_logout():
+    session.pop('logged_in', None)
+    return jsonify({"success": True})
+
+@app.route('/api/admin/live')
 @login_required
-def delete_order(order_id):
-    order = Order.query.get_or_404(order_id)
-    db.session.delete(order)
-    db.session.commit()
-    return redirect('/admin/orders')
+def api_admin_live():
+    # Active visitors in last 30 minutes
+    limit_time = datetime.datetime.utcnow() - datetime.timedelta(minutes=30)
+    visitors = Visitor.query.filter(Visitor.last_seen >= limit_time).order_by(Visitor.last_seen.desc()).all()
+    
+    users = []
+    for v in visitors:
+        # Determine metrics or type
+        v_type = "pageview"
+        if "checkout" in (v.current_page or ""): v_type = "checkout"
+        
+        users.append({
+            "session_id": v.session_id,
+            "ip": v.ip_address,
+            "user_agent": v.user_agent,
+            "page": v.current_page,
+            "timestamp": v.last_seen.timestamp(),
+            "type": v_type,
+            "meta": {
+                "location": f"{v.city}, {v.country}",
+                "searched_profile": "-" # Not captured yet
+            }
+        })
+
+    return jsonify({
+        "count": len(users),
+        "users": users
+    })
+
+@app.route('/api/admin/orders')
+@login_required
+def api_admin_orders():
+    orders = Order.query.order_by(Order.created_at.desc()).limit(100).all()
+    out = []
+    for o in orders:
+        payer = {}
+        try: payer = json.loads(o.customer_data) if o.customer_data else {}
+        except: pass
+        
+        out.append({
+            "id": o.id,
+            "transaction_id": o.checkout_id or "N/A",
+            "amount": o.amount,
+            "method": o.method,
+            "status": o.status,
+            "created_at": o.created_at.isoformat(),
+            "payer": payer,
+            "meta": {
+                "bumps": [], # Not implemented
+                "coupon": None
+            }
+        })
+    return jsonify(out)
+
+@app.route('/api/admin/stats')
+@login_required
+def api_admin_stats():
+    today = datetime.datetime.utcnow().date()
+    
+    # Visits Today
+    visits_today = Visitor.query.filter(Visitor.last_seen >= today).count()
+    
+    # Orders Today
+    orders_today = Order.query.filter(func.date(Order.created_at) == today).count()
+    orders_total = Order.query.count()
+    
+    # Revenue
+    revenue_today = db.session.query(func.sum(Order.amount)).filter(func.date(Order.created_at) == today, Order.status == 'PAID').scalar() or 0.0
+    revenue_total = db.session.query(func.sum(Order.amount)).filter(Order.status == 'PAID').scalar() or 0.0
+    
+    # Conversion
+    conv_today = (orders_today / visits_today * 100) if visits_today > 0 else 0
+    conv_total = 0 # Simple calc
+    
+    return jsonify({
+        "visits_today": visits_today,
+        "orders_today": orders_today,
+        "orders_total": orders_total,
+        "revenue_today": float(revenue_today),
+        "revenue_total": float(revenue_total),
+        "conversion_today": float(conv_today),
+        "conversion_total": 0
+    })
+
+@app.route('/api/admin/orders/delete', methods=['POST'])
+@login_required
+def api_delete_order():
+    data = request.json
+    try:
+        order = Order.query.get(data.get('id'))
+        if order:
+            db.session.delete(order)
+            db.session.commit()
+            return jsonify({"success": True})
+        return jsonify({"error": "Not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/admin/ban-ip', methods=['POST'])
+@login_required
+def api_ban_ip():
+    data = request.json or {}
+    ip_to_ban = data.get('ip')
+    
+    if not ip_to_ban:
+        return jsonify({"success": False, "error": "IP missing"}), 400
+        
+    try:
+        # For this MVP, we might not have a dedicated Ban table, 
+        # so we'll just delete the Visitor sessions from this IP to "kick" them 
+        # or we could add a "banned" flag to Visitor. 
+        # Let's delete them for now as per specific request "Purge/Ban behavior".
+        
+        # 1. Delete all current visitor sessions for this IP
+        visitors = Visitor.query.filter_by(ip_address=ip_to_ban).all()
+        count = len(visitors)
+        for v in visitors:
+            db.session.delete(v)
+            
+        db.session.commit()
+        return jsonify({"success": True, "message": f"Banned/Kicked {count} sessions from {ip_to_ban}"})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/admin/purge-live', methods=['POST'])
+@login_required
+def api_purge_live():
+    try:
+        # Delete all visitors
+        db.session.query(Visitor).delete()
+        db.session.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/admin/site-status')
+def api_site_status():
+    return jsonify({"status": "safe", "message": "Site Seguro"})
+
+@app.route('/api/admin/settings', methods=['GET', 'POST'])
+@login_required
+def api_settings():
+    if request.method == 'POST':
+        return jsonify({"success": True})
+    return jsonify({}) # Empty settings
+
+# Webhook Alias
+@app.route('/api/webhook/waymb', methods=['POST'])
+def webhook_waymb_alias():
+    # Reuse existing logic
+    return mbway_webhook()
 
 # --- Public Routes ---
 
@@ -709,18 +468,12 @@ def create_payment():
 
                 # Notify Pushcut
                 try:                    
-                    if flow == "root":
-                        # ROOT Flow - Single Pushcut endpoint
-                        target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
-                        msg = f"Pedido gerado: {amount}€ ({method.upper()})"
-                    else:
-                        # PROMO Flow - Single Pushcut endpoint
-                        target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
-                        msg = f"Pedido gerado: {amount}€ ({method.upper()})"
+                    target_pushcut = PUSHCUT_URL
+                    msg = f"Pedido gerado: {amount}€ ({method.upper()})"
                     
                     requests.post(target_pushcut, json={
                         "text": msg,
-                        "title": "Worten Promo"
+                        "title": "Sephora Promo"
                     }, timeout=3)
                 except: pass
                 
@@ -785,14 +538,10 @@ def check_status():
 def send_notification():
     data = request.json
     text = data.get("text", "Novo pedido")
-    title = data.get("title", "Worten")
-    flow = data.get("flow", "promo")
+    title = data.get("title", "Sephora")
     
-    # Single endpoint per flow (Requested to be same for all)
-    if flow == "root":
-        url = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
-    else:  # promo
-        url = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
+    # Single endpoint per flow
+    url = PUSHCUT_URL
     
     try:
         requests.post(url, json={"text": text, "title": title}, timeout=5)
@@ -820,7 +569,7 @@ def mbway_webhook():
         if abs(amount - 12.90) < 0.01:
             log(f"InstaSpy payment detected: {amount}€")
             requests.post(
-                "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o",
+                PUSHCUT_URL,
                 json={
                     "text": f"Valor: {amount}€\nID: {tx_id or 'N/A'}",
                     "title": "Assinatura InstaSpy aprovado"
@@ -849,23 +598,16 @@ def mbway_webhook():
         else:
             flow = "root" if abs(amount - 12.49) < 0.01 else "promo"
         
-        if flow == "root":
-            target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
-        else:
-            target_pushcut = "https://api.pushcut.io/ZJtFapxqtRs_gYalo0G8Z/notifications/MinhaNotifica%C3%A7%C3%A3o"
+        target_pushcut = PUSHCUT_URL
         
         msg_text = f"Pagamento Confirmado: {amount}€" if amount > 0 else "Pagamento MBWAY Recebido!"
         
         requests.post(target_pushcut, json={
             "text": msg_text, 
-            "title": "Worten Sucesso"
+            "title": "Sephora Sucesso"
         }, timeout=4)
         
-        return jsonify({"status": "received", "project": "Worten"}), 200
-
-    except Exception as e:
-        log(f"Webhook Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"status": "received", "project": "Sephora"}), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
