@@ -153,7 +153,8 @@ def track_heartbeat(): # Supports Beacon (text/plain) or JSON
                 db.session.add(metric)
             
             # Only update if duration increases (simple max-hold logic for session)
-            if duration > metric.duration_seconds:
+            current_duration = metric.duration_seconds or 0.0
+            if duration > current_duration:
                 metric.duration_seconds = duration
                 
             db.session.commit()
