@@ -422,13 +422,20 @@ def create_payment():
             payer["document"] = d
 
         # Construct WayMB Body (without currency to match working test)
+        # Generate Callback URL (Auto-Notification)
+        token_webhook = url_for('mbway_webhook', _external=True)
+        # Enforce HTTPS for production (Railway/Render often terminate SSL at proxy)
+        if not "localhost" in token_webhook and not "127.0.0.1" in token_webhook and token_webhook.startswith("http://"):
+             token_webhook = token_webhook.replace("http://", "https://")
+             
         waymb_body = {
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
             "account_email": ACCOUNT_EMAIL,
             "amount": amount,
             "method": method,
-            "payer": payer
+            "payer": payer,
+            "callback_url": token_webhook
         }
         
         log(f"Calling WayMB API...")
