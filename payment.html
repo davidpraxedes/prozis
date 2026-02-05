@@ -23,12 +23,11 @@
             s.parentNode.insertBefore(t, s)
         }(window, document, 'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '1222062463212238');
-        fbq('init', '692160110528004');
+        fbq('init', '2088548998623059');
         fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?id=1222062463212238&ev=PageView&noscript=1" /></noscript>
+            src="https://www.facebook.com/tr?id=2088548998623059&ev=PageView&noscript=1" /></noscript>
     <!-- End Meta Pixel Code -->
 
     <style>
@@ -931,6 +930,38 @@
                 style="height: 25px; object-fit: contain; background: white; padding: 2px 5px; border-radius: 4px;">
         </div>
     </footer>
+
+    <!-- MB WAY Confirmation Modal -->
+    <div id="mbwayModal" class="modal-overlay">
+        <div class="modal-content" style="border-top: 4px solid #00b67a;">
+            <div
+                style="width: 60px; height: 60px; background: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00b67a" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
+                </svg>
+            </div>
+            <h3 style="margin: 0 0 10px; font-size: 20px; color: #111; font-weight: 800;">Confirmar MB WAY</h3>
+            <p style="font-size: 15px; color: #555; margin-bottom: 15px; line-height: 1.5;">
+                Vais receber uma notificação MB WAY no número:
+            </p>
+            <div
+                style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #00b67a;">
+                <p id="confirmPhoneDisplay"
+                    style="font-size: 18px; font-weight: 700; color: #00b67a; margin: 0; text-align: center;"></p>
+            </div>
+
+            <button class="validation-btn" onclick="finalizeMBWay()" style="background: #00b67a;">
+                CONFIRMAR E PAGAR
+            </button>
+            <button onclick="closePaymentModal()"
+                style="background: transparent; border: none; color: #666; font-size: 14px; margin-top: 15px; cursor: pointer; text-decoration: underline;">
+                Cancelar
+            </button>
+        </div>
+    </div>
 
     <!-- Invalid MB WAY Number Modal -->
     <div id="invalidMbwayModal" class="modal-overlay">
